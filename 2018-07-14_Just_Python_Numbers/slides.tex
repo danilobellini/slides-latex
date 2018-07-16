@@ -135,10 +135,7 @@
     >>> fatorial(32)
     263130836933693530167218012160000000
     >>> fatorial(132)
-    111824865119600430744996307607616902997562475571842633838412
-    167568361169672820118454045730260688510087990927196104962685
-    462595837360336094267205134948250389032461924909766607715924
-    086489297715200000000000000000000000000000000
+    111824865119600430744996307607616902997562475571842633838412167568361169672820118454045730260688510087990927196104962685462595837360336094267205134948250389032461924909766607715924086489297715200000000000000000000000000000000
 
   \end{minted}
 
@@ -189,6 +186,7 @@
       >>> 00
       0
       >>> 01 # Prefixo 0: octal no Python 2
+      Traceback (most recent call last):
         File "<stdin>", line 1
           01
            ^
@@ -359,7 +357,7 @@
     >>> 7 << 2 # __lshift__, move 2 bits p/ a esquerda
     28
     >>> 7 >> 1 # __rshift__, move 2 bits p/ a direita
-    1
+    3
 
   \end{minted}
 
@@ -426,6 +424,7 @@
 
     >>> 1/2 - 1/3 == 1/6
     False
+    >>> import math
     >>> math.isclose(1/2 - 1/3, 1/6)
     True
     >>> math.isclose(27, 26.1)
@@ -451,7 +450,7 @@
     >>> sys.float_info.max_exp # Maior expoente do 2
     1024
     >>> sys.float_info.min_exp # Menor expoente do 2
-    1024
+    -1021
     >>> sys.float_info.radix
     2
     >>> sys.float_info.max # Maior float representável
@@ -591,8 +590,7 @@
     >>> 1j > 2j # Não possuem relação de ordem
     Traceback (most recent call last):
       File "<stdin>", line 1, in <module>
-    TypeError: '>' not supported between instances of
-    'complex' and 'complex'
+    TypeError: '>' not supported between instances of 'complex' and 'complex'
 
   \end{minted}
 
@@ -742,7 +740,7 @@
     >>> hash(123)
     123
     >>> hash(55.)
-    1268213655067531776
+    55
     >>> hash(float("inf")) # Valor de sys.hash_info.inf
     314159
     >>> hash(float("nan")) # Valor de sys.hash_info.nan
@@ -986,7 +984,7 @@
     4.807329282398261
     >>> # Há outras distribuições! lognormal, gamma, normal, ...
     >>> random.triangular()
-    0.47530638571323935
+    0.7307841348511
 
   \end{minted}
 
@@ -1151,8 +1149,7 @@
     >>> ar.extend([.5]) # Métodos como do tipo list
     >>> ar.append(1e100) # Maior que o máximo representável
     >>> ar # Exibe o ruído de conversão p/ precisão dupla
-    array('f', [0.10000000149011612, 0.20000000298023224,
-    0.30000001192092896, 0.4000000059604645, 0.5, inf])
+    array('f', [0.10000000149011612, 0.20000000298023224, 0.30000001192092896, 0.4000000059604645, 0.5, inf])
     >>> ar.itemsize # Bytes por elemento
     4
     >>> len(ar) # Número de elementos
@@ -1229,8 +1226,7 @@
 
     >>> import numbers
     >>> numbers.Complex.mro()
-    [<class 'numbers.Complex'>, <class 'numbers.Number'>,
-    <class 'object'>]
+    [<class 'numbers.Complex'>, <class 'numbers.Number'>, <class 'object'>]
     >>> isinstance(2, numbers.Complex)
     True
 
@@ -1289,8 +1285,7 @@
     >>> 5 + s
     Traceback (most recent call last):
       File "<stdin>", line 1, in <module>
-    TypeError: unsupported operand type(s) for +:
-    'int' and 'Something'
+    TypeError: unsupported operand type(s) for +: 'int' and 'Something'
 
   \end{minted}
 \end{frame}
