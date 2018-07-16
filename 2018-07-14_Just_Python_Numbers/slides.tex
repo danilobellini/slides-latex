@@ -99,6 +99,7 @@
   Dos números em Python, apenas os $3$ tipos built-in possuem literais.
 
   \begin{minted}{python}
+
     # int
     2
     128_237  # O _ é apenas visual
@@ -114,6 +115,7 @@
     2.23j
     2 + 3J
     complex(2, 3) # O número acima, sem ser como literal
+
   \end{minted}
 
 \end{frame}
@@ -124,6 +126,7 @@
   Muito mais que $32$, $64$ ou $128$ bits!
 
   \begin{minted}{python}
+
     >>> def fatorial(n):
     ...     return n * fatorial(n - 1) if n > 1 else 1
     ...
@@ -136,6 +139,7 @@
     167568361169672820118454045730260688510087990927196104962685
     462595837360336094267205134948250389032461924909766607715924
     086489297715200000000000000000000000000000000
+
   \end{minted}
 
 \end{frame}
@@ -156,6 +160,7 @@
 
     \column{.3\textwidth}
     \begin{minted}{python}
+
       >>> # Binário
       >>> 0b10110
       22
@@ -171,10 +176,12 @@
       22
       >>> oct(23)
       '0o27'
+
     \end{minted}
 
     \column{.7\textwidth}
     \begin{minted}{python}
+
       >>> int("2112", base=3) # Base arbitrária
       68
       >>> 2*27 + 1*9 + 1*3 + 2*1 # Check!
@@ -186,6 +193,7 @@
           01
            ^
       SyntaxError: invalid token
+
     \end{minted}
 
   \end{columns}
@@ -203,6 +211,7 @@
   cujo nome está no comentário:
 
   \begin{minted}{python}
+
     >>> +2 # __pos__                       # O "@", __matmul__,
     2
     >>> -2 # __neg__                       # não é usado pelas
@@ -219,6 +228,7 @@
     5
     >>> 17 / 3 # __truediv__
     5.666666666666667
+
   \end{minted}
 
 \end{frame}
@@ -233,6 +243,7 @@
   a qual deve ser a primeira linha de todo módulo.
 
   \begin{minted}{python}
+
     >>> 3 / 2 # __div__ no Python 2
     1
     >>> from __future__ import division
@@ -240,6 +251,7 @@
     1.5
     >>> divmod(7, 5) # 7 // 5, 7 % 5
     (1, 2)
+
   \end{minted}
 
   O \mintinline{python}{divmod} é um \emph{built-in}
@@ -258,6 +270,7 @@
   mais próximo do \mintinline{python}{range} do Python 3.
 
   \begin{minted}{python}
+
     >>> range(5) # 1 parâmetro: stop (nunca incluído)
     range(0, 5)
     >>> range(3, 7) # 2 parâmetros: start, stop
@@ -270,6 +283,7 @@
     [3, 5]
     >>> list(range(-5, -12, -2)) # Negativos!
     [-5, -7, -9, -11]
+
   \end{minted}
 
   Djikstra prefere esse modelo pois
@@ -284,6 +298,7 @@
   Isto pode ser útil caso o operador seja um parâmetro.
 
   \begin{minted}{python}
+
     >>> import operator
     >>> operator.neg(25) # Operador unário
     -25
@@ -292,6 +307,7 @@
     >>> from functools import reduce
     >>> reduce(operator.mul, [5, 3, 2]) # Produtório
     30
+
   \end{minted}
 
   Os operadores relativos aos números existem com o mesmo nome do
@@ -303,6 +319,7 @@
   A igualdade de números independe do tipo!
 
   \begin{minted}{python}
+
     >>> 7 == 2 # __eq__
     False
     >>> 18 != 18. # __ne__ de int e float
@@ -319,6 +336,7 @@
     (1+0j)
     >>> 1 + 0j == 1
     True
+
   \end{minted}
 
 \end{frame}
@@ -329,6 +347,7 @@
   aplicados nos bits pensando no número em binário.
 
   \begin{minted}[mathescape]{python}
+
     >>> ~38 # __invert__, ~valor == -(valor + 1)
     -39
     >>> 13 & 7 # __and__, 0b1101 | 0b0111 == 0b0101
@@ -341,6 +360,7 @@
     28
     >>> 7 >> 1 # __rshift__, move 2 bits p/ a direita
     1
+
   \end{minted}
 
 \end{frame}
@@ -355,6 +375,7 @@
   e não existe literal de \mintinline{python}{float} em outra base.
 
   \begin{minted}{python}
+
     >>> 0. # Basta 1 dígito decimal e o ponto
     0.0
     >>> -.0 # Há um zero positivo e um negativo!
@@ -367,6 +388,7 @@
     100000.0
     >>> float.hex(3.) # Método hex, 3 == 0b1.1 * 2
     '0x1.8000000000000p+1'
+
   \end{minted}
 
 \end{frame}
@@ -377,6 +399,7 @@
   mas números como $1/3$ e $1/5$ são dízimas periódicas em binário.
 
   \begin{minted}{python}
+
     >>> (1/3).hex()
     '0x1.5555555555555p-2'
     >>> (1/5).hex()
@@ -385,6 +408,7 @@
     -2.7755575615628914e-17
     >>> 1/3 - 1/2 == 1/6
     False
+
   \end{minted}
 
 \end{frame}
@@ -399,6 +423,7 @@
   }.
 
   \begin{minted}{python}
+
     >>> 1/2 - 1/3 == 1/6
     False
     >>> math.isclose(1/2 - 1/3, 1/6)
@@ -411,6 +436,7 @@
     False
     >>> math.isclose(2.7e30, 2.6999e30, rel_tol=.0001)
     True
+
   \end{minted}
 \end{frame}
 
@@ -418,6 +444,7 @@
 \begin{frame}[fragile]{Informações no \texttt{sys.float\_info}}
 
   \begin{minted}{python}
+
     >>> import sys
     >>> sys.float_info.mant_dig # Dígitos da mantissa
     53
@@ -435,6 +462,7 @@
     1.7976931348623157e+308
     >>> sys.float_info.max + 1e292 # Passou do máximo!
     inf
+
   \end{minted}
 
 \end{frame}
@@ -445,12 +473,14 @@
   representa um número inteiro.
 
   \begin{minted}{python}
+
     >>> (.5 + .5).is_integer()
     True
     >>> (1/3) * 5 * (3/5) # Deveria ser 1
     0.9999999999999999
     >>> ((1/3) * 5 * (3/5)).is_integer() # Gotcha!
     False
+
   \end{minted}
 
   O ideal é comparar com \mintinline{python}{math.isclose}.
@@ -462,6 +492,7 @@
   podem ser usados com ponto flutuante.
 
   \begin{minted}{python}
+
     >>> 2.27 > 2.25
     True
     >>> -2.27 > -2.25
@@ -475,12 +506,14 @@
     1.4142135623730951
     >>> 2 ** .5 # Alternativa (prefira o math.sqrt)
     1.4142135623730951
+
   \end{minted}
 \end{frame}
 
 
 \begin{frame}[fragile]{Divisão com \texttt{float} e \texttt{round}}
   \begin{minted}{python}
+
     >>> 2.7 / 1.2 # Divisão
     2.2500000000000004
     >>> 2.7 // 1.2
@@ -495,6 +528,7 @@
     0.30000000000000027
     >>> 2.7 % 1 # Parte fracionária
     0.7000000000000002
+
   \end{minted}
 \end{frame}
 
@@ -507,6 +541,7 @@
   \mintinline{python}{-inf}.
 
   \begin{minted}{python}
+
     >>> float("nan") == float("nan") # not a number
     False
     >>> float("inf") == float("inf") + 1
@@ -526,6 +561,7 @@
     False
     >>> math.isfinite(1e300)
     True
+
   \end{minted}
 \end{frame}
 
@@ -538,6 +574,7 @@
   são \mintinline{python}{float}.
 
   \begin{minted}{python}
+
     >>> complex(2, 3) # Parecem int, mas ...
     (2+3j)
     >>> complex(2, 3).real
@@ -556,6 +593,7 @@
       File "<stdin>", line 1, in <module>
     TypeError: '>' not supported between instances of
     'complex' and 'complex'
+
   \end{minted}
 
 \end{frame}
@@ -568,6 +606,7 @@
   Útil para trabalhar com valores monetários.
 
   \begin{minted}{python}
+
     >>> import decimal
     >>> decimal.getcontext().prec # Precisão (dígitos)
     28
@@ -581,6 +620,7 @@
     Decimal('37.531')
     >>> round(d * 2, 2) # Chama Decimal.__round__
     Decimal('37.53')
+
   \end{minted}
 
 \end{frame}
@@ -591,6 +631,7 @@
   Frações de números inteiros, já simplificada.
 
   \begin{minted}{python}
+
     >>> from fractions import Fraction
     >>> Fraction(5040, 120)
     Fraction(42, 1)
@@ -604,6 +645,7 @@
     7
     >>> Fraction(7, 2).denominator
     2
+
   \end{minted}
 
 \end{frame}
@@ -615,6 +657,7 @@
   Chama o método \mintinline{python}{__abs__} do tipo.
 
   \begin{minted}{python}
+
     >>> abs(-17)
     17
     >>> abs(-2.7)
@@ -626,6 +669,7 @@
     Decimal('8.231')
     >>> abs(fractions.Fraction(8, -3))
     Fraction(8, 3)
+
   \end{minted}
 
 \end{frame}
@@ -644,6 +688,7 @@
 
     \column{.4\textwidth}
     \begin{minted}{python}
+
       >>> bool(-.0) # float
       False
       >>> bool(.0000001)
@@ -658,10 +703,12 @@
       True
       >>> bool(.002j)
       True
+
     \end{minted}
 
     \column{.6\textwidth}
     \begin{minted}{python}
+
       >>> bool(0) # int
       False
       >>> bool(42)
@@ -676,6 +723,7 @@
       False
       >>> bool(Fraction(1, 2**90))
       True
+
     \end{minted}
 
   \end{columns}
@@ -688,6 +736,7 @@
   o hash de um número não depende do tipo.
 
   \begin{minted}{python}
+
     >>> hash(0) # Para inteiros, é o próprio número
     0
     >>> hash(123)
@@ -705,6 +754,7 @@
     >>> {float("inf"): 1, 314159: 2, # Just for fun
     ...  float("nan"): 3, 0: 4, 0.: 5, 0j: 6}
     {inf: 1, 314159: 2, nan: 3, 0: 6}
+
   \end{minted}
 
 \end{frame}
@@ -721,6 +771,7 @@
   \mintinline{python}{imath}).
 
   \begin{minted}{python}
+
     >>> import math, cmath
     >>> cmath.sin(math.pi / 6) # sin(30 degrees)
     (0.49999999999999994+0j)
@@ -732,6 +783,7 @@
     Traceback (most recent call last):
       File "<stdin>", line 1, in <module>
     TypeError: can't convert complex to float
+
   \end{minted}
 
   No próximo slide constam todas as funções do
@@ -788,6 +840,7 @@
 \begin{frame}[fragile]{Exemplo de execução
                        de funções do \texttt{cmath}}
   \begin{minted}{python}
+
     >>> from math import sqrt, pi
     >>> from cmath import phase, polar, rect
     >>> abs(1 + 1j) # Módulo
@@ -800,6 +853,7 @@
     (1.4142135623730951, 0.7853981633974483)
     >>> rect(sqrt(2), pi / 4) # Polar -> Cartesiano
     (1.0000000000000002+1j)
+
   \end{minted}
 \end{frame}
 
@@ -854,6 +908,7 @@
 
 \begin{frame}[fragile]{Exemplo de execução de funções do \texttt{math}}
   \begin{minted}{python}
+
     >>> import math
     >>> math.gamma(6) # Para inteiros, é o fatorial(n - 1)
     120.0
@@ -871,6 +926,7 @@
     32
     >>> .6875 * 32
     22.0
+
   \end{minted}
 \end{frame}
 
@@ -879,11 +935,13 @@
   Há duas: \mintinline{python}{gcd} e \mintinline{python}{factorial}.
 
   \begin{minted}{python}
+
     >>> from math import gcd, factorial
     >>> factorial(7) # 7*6*5*4*3*2*1
     5040
     >>> gcd(18, 12) # Maior divisor comum
     6
+
   \end{minted}
 \end{frame}
 
@@ -894,6 +952,7 @@
   Segue um exemplo de rotinas para embaralhamento:
 
   \begin{minted}{python}
+
     >>> import random
     >>> random.seed(42) # Congela valores p/ re-execuções
     >>> # Seleciona algum dos possíveis valores
@@ -905,6 +964,7 @@
     [6, 7, 2, 9, 5, 4, 8, 3, 1, 0]
     >>> random.sample(data, 4) # "Amostra" de data sem repetir
     [1, 8, 9, 3]
+
   \end{minted}
 
 \end{frame}
@@ -912,6 +972,7 @@
 
 \begin{frame}[fragile]{Módulo \texttt{random} para geração de números}
   \begin{minted}{python}
+
     >>> random.seed(11)
     >>> # Distribuição uniforme:
     >>> random.random() # Gera float 0 <= x < 1
@@ -926,6 +987,7 @@
     >>> # Há outras distribuições! lognormal, gamma, normal, ...
     >>> random.triangular()
     0.47530638571323935
+
   \end{minted}
 
   Há ainda uma classe \mintinline{python}{Random} para permitir
@@ -956,6 +1018,7 @@
 \begin{frame}[fragile]{Medidas de tendência central
                        com o módulo \texttt{statistics}}
   \begin{minted}{python}
+
     >>> import statistics
     >>> statistics.mean([3, 5, 10]) # int
     6
@@ -973,6 +1036,7 @@
     6
     >>> statistics.mode([3, 5, 5, 6, 11])
     5
+
   \end{minted}
 \end{frame}
 
@@ -985,6 +1049,7 @@
   os valores são da população.
 
   \begin{minted}{python}
+
     >>> import statistics
     >>> statistics.variance([3, 5, 5, 6, 11])
     9
@@ -994,6 +1059,7 @@
     7.2
     >>> statistics.pstdev([3, 5, 5, 6, 11])
     2.6832815729997477
+
   \end{minted}
 \end{frame}
 
@@ -1006,6 +1072,7 @@
   nos números em ponto flutuante? Há $3$ formas:
 
   \begin{minted}{python}
+
     >>> "%f" % 15.7
     '15.700000'
     >>> "%g" % 15.7
@@ -1019,6 +1086,7 @@
     >>> number, digits = 15.7, 32
     >>> f"{number:.{digits}f}"
     '15.69999999999999928945726423989981'
+
   \end{minted}
 
 \end{frame}
@@ -1032,6 +1100,7 @@
   que permite "cortar zeros à direita".
 
   \begin{minted}{python}
+
     >>> from decimal import Decimal
     >>> "%f" % Decimal("15.70")
     '15.700000'
@@ -1044,6 +1113,7 @@
     >>> number, digits = Decimal("15.7"), 32
     >>> f"{number:.{digits}f}"
     '15.70000000000000000000000000000000'
+
   \end{minted}
 
 \end{frame}
@@ -1051,6 +1121,7 @@
 
 \begin{frame}[fragile]{Representação de \texttt{int} em strings}
   \begin{minted}{python}
+
     >>> "%d" % -232
     '-232'
     >>> "%6d" % -232
@@ -1062,6 +1133,7 @@
     >>> value = -232
     >>> f"{value + 2:08d}"
     '-0000230'
+
   \end{minted}
 \end{frame}
 
@@ -1071,6 +1143,7 @@
   Os métodos lembram os de uma lista.
 
   \begin{minted}{python}
+
     >>> from array import array
     >>> ar = array("f", [.1, .2, .3, .4])
     >>> ar.typecode # Ponto flutuante de precisão simples
@@ -1084,6 +1157,7 @@
     4
     >>> len(ar) # Número de elementos
     6
+
   \end{minted}
 
 \end{frame}
@@ -1116,6 +1190,7 @@
   de/para \mintinline{python}{bytes}.
 
   \begin{minted}{python}
+
     >>> import struct
     >>> struct.unpack("bb", b"\x05\x06") # Inteiros de $1$ byte
     (5, 6)
@@ -1132,6 +1207,7 @@
     b'\x00\xd8\x00\xe2'
     >>> pair_struct.unpack(b"\x07\x00\x00\xff")
     (1792, 255)
+
   \end{minted}
 
   O \mintinline{python}{"hh"} nativo
@@ -1150,12 +1226,14 @@
   cada um herdando do anterior nessa ordem.
 
   \begin{minted}{python}
+
     >>> import numbers
     >>> numbers.Complex.mro()
     [<class 'numbers.Complex'>, <class 'numbers.Number'>,
     <class 'object'>]
     >>> isinstance(2, numbers.Complex)
     True
+
   \end{minted}
 
 \end{frame}
@@ -1164,12 +1242,14 @@
 \begin{frame}[fragile]{Criando sua ABC c/
                        \texttt{\_\_instancecheck\_\_}}
   \begin{minted}{python}
-    class OddMeta(type):
-        def __instancecheck__(self, value):
-            return isinstance(value, int) and value % 2 == 1
-    class Odd(metaclass=OddMeta):
-        pass
 
+    >>> class OddMeta(type):
+    ...     def __instancecheck__(self, value):
+    ...         return isinstance(value, int) and value % 2 == 1
+    ...
+    >>> class Odd(metaclass=OddMeta):
+    ...     pass
+    ...
     >>> isinstance(2, Odd)
     False
     >>> isinstance(3, Odd)
@@ -1178,6 +1258,7 @@
     False
     >>> isinstance(5, Odd)
     True
+
   \end{minted}
 \end{frame}
 
@@ -1191,12 +1272,13 @@
   poder ser convertido em um dos $3$ tipos homônimos.
 
   \begin{minted}{python}
-    class Something(object):
-        value = 0
-        def __int__(self):
-            self.value += 1
-            return self.value
 
+    >>> class Something(object):
+    ...     value = 0
+    ...     def __int__(self):
+    ...         self.value += 1
+    ...         return self.value
+    ...
     >>> s = Something()
     >>> 5 + int(s)
     6
@@ -1209,6 +1291,7 @@
       File "<stdin>", line 1, in <module>
     TypeError: unsupported operand type(s) for +:
     'int' and 'Something'
+
   \end{minted}
 \end{frame}
 
@@ -1216,14 +1299,16 @@
 \begin{frame}[fragile]{E com herança?}
 
   \begin{minted}{python}
-    class Sucessor(int):
-        def __new__(cls, value):
-            return super().__new__(cls, value + 1)
 
+    >>> class Sucessor(int):
+    ...     def __new__(cls, value):
+    ...         return super().__new__(cls, value + 1)
+    ...
     >>> Sucessor(7)
     8
     >>> type(Sucessor(7))
     <class '__main__.Sucessor'>
+
   \end{minted}
 \end{frame}
 
