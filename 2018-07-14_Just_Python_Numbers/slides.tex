@@ -419,10 +419,15 @@
 \begin{frame}[fragile]{\texttt{math.isclose}}
   Use \mintinline{python}{math.isclose} ao invés de igualdade
   para comparar números quando estiverem em ponto flutuante.
-  A comparação é
-  \mintinline{python}{
-    abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
-  }.
+  A comparação é:
+  \[ |a-b| \le max(tol_{rel} \cdot max(|a|, |b|), tol_{abs}) \]
+
+  Em Python, c/ os nomes dos argumentos nominados de tolerância:
+  \begin{center}
+    \mintinline{python}{
+      abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
+    }
+  \end{center}
 
   \begin{minted}{python}
 
