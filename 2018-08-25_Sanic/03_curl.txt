@@ -1,0 +1,7 @@
+$ # Flask
+$ curl localhost:1337 -H 'Content-Type: application/json' \
+                      -d '{"mass": 85, "height": 1.82}'
+{"imc":25.661152034778407}
+$ # Sanic (a rigor, o response.json ignora o header Content-Type)
+$ !!
+{"imc":25.6611520348}
