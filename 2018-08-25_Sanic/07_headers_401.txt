@@ -1,0 +1,8 @@
+HTTP/1.1 401 Unauthorized
+Connection: keep-alive
+Keep-Alive: 5
+Duration: 0:00:00.000549
+Path: /another/path
+Date: Sat, 25 Aug 2018 13:19:31 -0000
+Content-Length: 19
+Content-Type: text/plain; charset=utf-8
