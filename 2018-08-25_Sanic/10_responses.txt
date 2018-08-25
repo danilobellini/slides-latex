@@ -1,0 +1,7 @@
+HTTP/1.1 405 Method Not Allowed
+[...]
+{"error":"method_not_allowed"}
+
+HTTP/1.1 404 Not Found
+[...]
+{"error":"not_found"}
