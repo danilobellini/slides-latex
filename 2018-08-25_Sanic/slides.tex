@@ -1,0 +1,554 @@
+\documentclass[utf8]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{inconsolata}
+\usepackage{minted}
+\usepackage{tabu}
+\usepackage[absolute,overlay]{textpos}
+
+\definecolor{codebgcolor}{HTML}{FFFFFF}
+\definecolor{coderulecolor}{HTML}{5F7FFF}
+\definecolor{outerbgcolor}{HTML}{F0FFF0}
+
+\setminted{python3, autogobble,
+           breaklines, breakanywhere,
+           breaksymbolindentleft=0pt, breaksymbolindentright=0pt,
+           breaksymbolsepleft=3pt, breaksymbolsepright=3pt,
+           breaksymbolright=...,
+           bgcolor=codebgcolor, style=paraiso-light,
+           fontsize=\fontsize{8pt}{8pt},
+           frame=lines, rulecolor=coderulecolor, framerule=.7pt}
+\setmintedinline{bgcolor={}}
+
+\mode<presentation>
+\usetheme{Warsaw}
+\usecolortheme{seahorse}
+\setbeamercolor{structure}{fg=cyan!90!black}
+\setbeamercolor{background canvas}{bg=outerbgcolor}
+\beamertemplatenavigationsymbolsempty
+
+\setbeamertemplate{footline}{\leavevmode\hbox{%
+  \begin{beamercolorbox}[wd=.35\paperwidth, ht=2.25ex, dp=1ex, center]
+                        {author in head/foot}
+    \usebeamerfont{author in head/foot}
+      Danilo J. S. Bellini \hfill \texttt{@danilobellini}
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.65\paperwidth, ht=2.25ex, dp=1ex, center]
+                        {title in head/foot}
+    \usebeamerfont{title in head/foot}
+      \insertshorttitle~--~\insertshortsubtitle \hfill
+      \insertshortdate \hfill
+      \insertframenumber\,/\,\inserttotalframenumber
+  \end{beamercolorbox}%
+}}
+
+\title{Introdução ao Sanic}
+\subtitle{O Flask Assíncrono}
+\author{Danilo J. S. Bellini \\ \texttt{@danilobellini}}
+\date{2018-08-25}
+
+\setlength{\TPHorizModule}{\paperheight}
+\setlength{\TPVertModule}{\paperheight}
+
+
+\begin{document}
+
+
+\begin{frame}
+  \titlepage
+  \center Flask Conf @ Developer Hub -- SP
+  \begin{textblock}{0}(.9, .4)%
+    \includegraphics[height=110pt]{sanic.png}%
+  \end{textblock}
+\end{frame}
+
+
+\begin{frame}{Origem do nome}
+  \emph{Sonic: The Hedgehog} é um personagem bastante conhecido
+  do mundo dos games...
+  \emph{Sanic} é o nome dos seus memes feitos às pressas,
+  de qualquer jeito!
+  \vfill
+  \begin{columns}[t]
+    \column{.5\textwidth}\scriptsize
+    ``Gotta go fast''
+    \includegraphics[height=110pt]{gotta_go_fast.png}
+    Referência à música de abertura
+    do anime Sonic X na versão estadunidense,
+    foi em 2008 associado a um desenho de fã
+    presente no (agora extinto) Sonic Central.
+
+    \column{.5\textwidth}\scriptsize
+    ``Sanic''
+    \includegraphics[height=110pt]{sanic_0nyxheart.png}
+    Meme criado em março de 2010 por 0nyxheart
+    em um vídeo com o título ``How 2 Draw Sanic Hegehog``
+    desenhando o personagem no Microsoft Paint.
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}{1\textsuperscript{\b{o}} \emph{commit} em 2016-05-26,
+              \emph{post} no Reddit em 2016-10-14}
+  \emph{E se nativamente o Flask pudesse ser assíncrono
+        e $6$ (seis) vezes mais rápido?}
+  \vfill
+  Eis o Sanic, para quando você ``gotta go fast''
+  (precisa ir rápido)!
+  \begin{itemize}
+    \item Assíncrono~--- \mintinline{python}{async def}
+    \item ``Reluzente''~--- Python 3.5+
+    \item Simples~--- rotas como no Flask
+    \item Leve~--- não precisa de ferramentas especiais
+  \end{itemize}
+  \vfill
+  Dados fornecidos pelo criador, no Reddit:
+  {\fontsize{9pt}{11pt}\selectfont
+    \begin{tabu} to \textwidth {ccc}
+      Framework & Requisições/segundo & Latência média \\
+      \cline{1-3}
+      Sanic (Python 3.5 + uvloop) & 30,601 & 3.23ms \\
+      Flask (gunicorn + meinheld) & 4,988 & 20.08ms \\
+    \end{tabu}
+  }
+  \vfill
+  Link: \url{https://www.reddit.com/r/Python/comments/57i301/}
+\end{frame}
+
+
+\begin{frame}{Citações}
+  \begin{itemize}
+    \item (2016-10-14)
+      \emph{Sanic was created because I love the freedom of Flask,
+            but dislike deploying it
+            and its lack of native async support.}
+      (Channel Cat, criador do Sanic)
+
+    \item (2018-03-26)
+      \emph{Sanic: python web server that's written to die fast}
+      (Andrew Svetlov, criador do \texttt{aiohttp})
+
+    \item (2018-03-28)
+      \emph{I'm a fan of Sanic, keep up the good work.}
+      (Phil Jones, autor do Quart)
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{\emph{Hello World!}}
+  \begin{columns}[t]
+    \column{.5\textwidth}Flask\inputminted{python}{01_flask.py}
+    \column{.5\textwidth}Sanic\inputminted{python}{01_sanic.py}
+  \end{columns}
+  \vfill
+  Rodando os servidores (porta $1337$):
+  \inputminted{shell}{01_run.sh}
+\end{frame}
+
+
+\begin{frame}[fragile]{Rodando como um script}
+  Caso se queira personalizar a execução rodando como um script,
+  isto é, rodando algo como
+  \mintinline{shell}{python -m 02_xxxxx_script}
+  diretamente do Python,
+  podemos escrever esse script Python como:
+  \vfill
+  \begin{columns}[t]
+    \column{.5\textwidth}Flask\inputminted{python}{02_flask_script.py}
+    \column{.5\textwidth}Sanic\inputminted{python}{02_sanic_script.py}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}[fragile]{JSON I/O (POST): Índice de Massa Corporal}
+  \begin{columns}
+    \column{.6\textwidth}
+    \inputminted{python}{03_flask_json.py}
+    \vfill
+    \inputminted{python}{03_sanic_json.py}
+
+    \column{.4\textwidth}
+    \fontsize{.8em}{1.2em}\selectfont
+    A sintaxe p/ selecionar os verbos do HTTP é a mesma:
+    o argumento nominado \mintinline{python}{methods}
+    com a lista de métodos (apenas GET, por padrão).
+
+    \vspace{1em}
+    O primeiro uso do \mintinline{python}{request.json}
+    avalia o corpo (\emph{body}/\emph{payload}) da requisição,
+    devolvendo \mintinline{python}{None} caso não consiga ler o JSON.
+    A diferença é que o Sanic ignora o \texttt{Content-Type} de
+    entrada e utiliza uma \mintinline{python}{property}.
+
+    \vspace{1em}
+    As respostas possuem o header
+    \texttt{Content-Type: application/json}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}[fragile]{JSON I/O (POST)~--- Resultados}
+  \inputminted{python}{03_curl.txt}
+  \vfill
+  \begin{columns}
+    \column{.5\textwidth}
+    Flask + Gunicorn
+    \inputminted{raw}{03_flask_headers.txt}
+
+    \column{.5\textwidth}
+    Sanic
+    \inputminted{raw}{03_sanic_headers.txt}
+    Conexões persistentes, baixa latência!
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}[fragile]{Status HTTP diferente de $200$ (OK)}
+  Entrada inválida?
+  A resposta é ``\texttt{HTTP/1.1 400 Bad Request}''!
+  \vfill
+  \begin{columns}
+    \column{.72\textwidth}
+    \inputminted[firstline=4]{python}{04_flask_400.py}
+    \inputminted[firstline=4]{python}{04_sanic_400.py}
+
+    \column{.28\textwidth}
+    \fontsize{.8em}{1.2em}\selectfont
+    As funções do módulo \mintinline{python}{response}
+    aceitam dois argumentos nominados:
+    \begin{itemize}
+      \item \texttt{status}~--- Inteiro com o status HTTP
+      \item \texttt{headers}~--- Dicionário com modificações
+                                 a serem feitas no cabeçalho HTTP
+    \end{itemize}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}[fragile]{Duas rotas no mesmo \emph{handler} c/ Flask}
+  Uma rota GET sem \emph{query string}
+  (i.e., a entrada está no próprio caminho)
+  e uma POST (JSON) tratadas pela mesma função.
+  \vfill
+  \inputminted{python}{05_flask_biroute.py}
+  \vfill
+  No Flask, blocos \texttt{<TIPO:NOME>}
+  são lidos, convertidos e passados como argumentos nominados.
+\end{frame}
+
+
+\begin{frame}[fragile]{Duas rotas no mesmo \emph{handler} c/ Sanic}
+  No Sanic, o tipo \mintinline{python}{float} apenas possui outro nome:
+  \mintinline{python}{number}.
+  \vfill
+  \inputminted{python}{05_sanic_biroute.py}
+  \vfill
+  No Sanic, blocos \texttt{<NOME:TIPO>} (o inverso do Flask)
+  são lidos, convertidos e passados como argumentos nominados.
+\end{frame}
+
+
+\begin{frame}{Tipos permitidos nas rotas}
+  \begin{itemize}
+    \item Flask~--- \texttt{string}, \texttt{int}, \texttt{float},
+                    \texttt{path} e \texttt{uuid}
+    \item Sanic~--- \texttt{int}, \texttt{number} e \emph{regexes}
+  \end{itemize}
+  \vfill
+  No Flask o uso de expressões regulares (\emph{regexes})
+  poderia ser feito processando o conteúdo de uma variável
+  definida no caminho com o tipo \texttt{path},
+  ou então customizando um conversor parametrizado
+  e inserindo-o em \mintinline{python}{app.url_map.converters}.
+  \vfill
+  \inputminted{python}{06_regex.py}
+\end{frame}
+
+
+\begin{frame}[fragile]{\emph{Middleware}}
+  \begin{columns}
+    \column{.77\textwidth}
+    \inputminted{python}{07_middlewares.py}
+
+    \column{.23\textwidth}
+    \fontsize{.8em}{1.2em}\selectfont
+    Similar ao \mintinline{python}{before_request}
+    e ao \mintinline{python}{after_request}
+    do Flask.
+
+    \vspace{1em}
+    Há várias coisas acontecendo:
+    \fontsize{.9em}{1em}\selectfont
+    \begin{itemize}
+      \item \emph{Timestamps} e tempo de processamento
+      \item Inserção de $3$ \emph{headers}
+      \item Autorização (\emph{bearer token})
+      \item Acesso ao caminho da requisição
+    \end{itemize}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}[fragile]{\emph{Middleware}~---
+                       \emph{Headers} dos resultados}
+  \begin{columns}
+    \column{.5\textwidth}
+    \inputminted{raw}{07_headers_200.txt}
+    \column{.5\textwidth}
+    \fontsize{.8em}{1.2em}\selectfont
+    Os caminhos testados foram:
+    \begin{itemize}
+      \item \texttt{/} \\ (com \emph{Authorization: TEST})
+      \item \texttt{/unknown} \\ (com \emph{Authorization: TEST})
+      \item \texttt{/another/path} \\ (apenas \emph{headers} do cURL)
+    \end{itemize}
+  \end{columns}
+  \begin{columns}
+    \column{.53\textwidth}
+    \inputminted{raw}{07_headers_404.txt}
+    \column{.53\textwidth}
+    \inputminted{raw}{07_headers_401.txt}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}[fragile]{\emph{Rodando um banco de dados PostgreSQL}}
+  \inputminted{shell}{08_database.sh}
+  \vfill
+  O comando \mintinline{shell}{docker run} acima
+  roda o PostgreSQL localmente,
+  e o segundo comando define
+  a variável de ambiente \texttt{PGSQL\_URL}
+  com o DSN (\emph{data source name}),
+  permitindo que a conexão com o banco
+  seja realizada por meio dessa variável
+  ao invés de um valor \emph{hardcoded} no código Python.
+\end{frame}
+
+
+\begin{frame}[fragile]{\emph{Listeners}~---
+                       \emph{Timestamp} do banco de dados...
+                       \emph{Await}!!!}
+  \begin{columns}
+    \column{.73\textwidth}
+    \inputminted{python}{08_listeners.py}
+
+    \column{.33\textwidth}
+    \fontsize{.8em}{1.2em}\selectfont
+    Há $4$ listeners possíveis,
+    e todos possuem os mesmos parâmetros
+    de entrada:
+    \begin{itemize}
+      \item \mintinline{python}{before_server_start}
+      \item \mintinline{python}{after_server_start}
+      \item \mintinline{python}{before_server_stop}
+      \item \mintinline{python}{after_server_stop}
+    \end{itemize}
+
+    \vspace{1em}
+    Finalmente assíncrono!
+  \end{columns}
+  \vfill
+  \inputminted{shell}{08_curl.txt}
+\end{frame}
+
+
+\begin{frame}[fragile]{Cuidados com o código síncrono}
+  \begin{columns}
+    \column{.65\textwidth}
+    \inputminted{python}{09_sync.py}
+    \column{.34\textwidth}
+    \inputminted{raw}{09_sync_result.txt}
+  \end{columns}
+  \vfill
+  \fontsize{.8em}{1em}\selectfont
+  Com $1$ worker, $5$ processos realizando requisições simultâneas,
+  e um total de $10$ requisições.
+  O comando abaixo foi utilizado para realizar as execuções:
+  \inputminted{shell}{09_run.sh}
+\end{frame}
+
+
+\begin{frame}[fragile]{\texttt{asyncio.sleep}}
+  \begin{columns}
+    \column{.72\textwidth}
+    \inputminted{python}{09_async.py}
+    \column{.34\textwidth}
+    \inputminted{raw}{09_async_result.txt}
+  \end{columns}
+  \vfill
+  \fontsize{.8em}{1em}\selectfont
+  Que tal $5$ vezes mais rápido?
+  Não use o \mintinline{python}{time.sleep}
+  em código assíncrono,
+  pois ele é bloqueante!
+\end{frame}
+
+
+\begin{frame}[fragile]{\texttt{concurrent.futures.ThreadPoolExecutor}}
+  \begin{columns}
+    \column{.74\textwidth}
+    \inputminted{python}{09_executor.py}
+    \column{.34\textwidth}
+    \inputminted{raw}{09_executor_result.txt}
+  \end{columns}
+  \vfill
+  \fontsize{.8em}{1em}\selectfont
+  Alternativa híbrida!
+  Por que não usar um pool de threads para rodar o código bloqueante
+  enquanto o restante continua assíncrono?
+  \vfill
+  O \mintinline{python}{None} desse excerto
+  denota o \mintinline{python}{ThreadPoolExecutor}.
+  \vfill
+  O \mintinline{python}{app.loop} é o \emph{loop} do \texttt{uvloop},
+  que também pode ser obtido através do
+  \mintinline{python}{asyncio.get_event_loop()}.
+\end{frame}
+
+
+\begin{frame}[fragile]{\emph{Blueprints}~---
+                       Rotas (\emph{request handlers})}
+  \fontsize{.8em}{1em}\selectfont
+  Se trocarmos a classe \mintinline{python}{Sanic}
+  pela classe \mintinline{python}{Blueprint},
+  a princípio nada muda...
+  \vfill
+  \begin{center}Módulo \texttt{imc10.py}\end{center}
+  \inputminted{python}{imc10.py}
+  \vfill
+  \emph{Blueprints} podem fazer parte da aplicação,
+  trata-se de uma forma de ``picotar'' em diferentes módulos
+  sem o problema de importação cíclica,
+  dado que o objeto \mintinline{python}{app}
+  é tipicamente criado no contexto do módulo principal.
+\end{frame}
+
+\begin{frame}[fragile]{\emph{Blueprints}~--- \emph{Middleware}}
+  \fontsize{.8em}{1em}\selectfont
+  A rigor, mesmo \emph{middlewares} e \emph{listeners}
+  podem fazer parte do blueprint, porém eles serão sempre globais
+  (isto é, o \emph{middleware} não é acionado apenas com as rotas
+   do módulo com o blueprint em que ele se encontra, mas com todas
+   as rotas tratadas pela aplicação).
+  \vfill
+  \begin{center}Módulo \texttt{middle10.py}\end{center}
+  \inputminted{python}{middle10.py}
+\end{frame}
+
+\begin{frame}[fragile]{Arquivos estáticos e \emph{blueprints}}
+  Bora unificar, aproveitando para fornecer arquivos estáticos!
+  \vfill
+  \inputminted{python}{10_bp.py}
+  \vfill
+  Há ainda diversos outros recursos
+    (e.g. prefixo de caminho,
+          uso de nomes e do \mintinline{python}{url_for}
+            para obtenção dos caminhos,
+          etc.).
+\end{frame}
+
+
+\begin{frame}[fragile]{\emph{Fallback} de exceções}
+  Nos exemplos em que haviam exceções não tratadas,
+  o servidor devolve um erro interno do servidor
+  (status HTTP $500$) com uma mensagem em HTML.
+  Algo similar ocorreu com os erros $404$ (não encontrado),
+  $405$ (método não permitido) e $401$ (não autorizado)
+  nos exemplos anteriores.
+  Essas exceções poderiam ser, todas, filtradas para terem
+  suas mensagens substituídas por mensagens em JSON.
+  Para isso, basta usar o decorador \texttt{exception}
+  (na aplicação ou em um \emph{blueprint}).
+  Por exemplo:
+  \inputminted{python}{exc10.py}
+\end{frame}
+
+
+\begin{frame}[fragile]{Respostas sempre JSON!}
+  Aplicando o novo \emph{blueprint},
+  \inputminted{python}{10_json_only.py}
+  \vfill
+  As requisições para rotas inválidas
+  agora resultam em JSON válido como resposta,
+  acompanhando o cabeçalho HTTP:
+  \inputminted{raw}{10_responses.txt}
+\end{frame}
+
+
+\begin{frame}{E muitos outros recursos!}
+  \begin{itemize}
+    \item Websockets (suporte nativo);
+    \item Testes automatizados com
+      \mintinline{python}
+                 {request, response = app.test_client.get("/rota")}
+      (ou com o \emph{plugin} \texttt{pytest-sanic})
+    \item \emph{Class-Based Views},
+      com \mintinline{python}{sanic.views.HTTPMethodView}
+      e \mintinline{python}{app.add_route};
+    \item Configuração (\mintinline{python}{app.config});
+    \item SSL;
+    \item Compartilhamento de loop com outros recursos assíncronos;
+    \item
+      \href{https://github.com/channelcat/sanic/wiki/Examples}{%
+        \nolinkurl{Exemplos}%
+      } na wiki do Sanic (GitHub)
+      com \texttt{aiohttp} (cliente HTTP assíncrono),
+      Jinja2, aiopeewee, aiopg, Motor, etc.;
+    \item
+      \href{https://github.com/channelcat/sanic/wiki/Extensions}{%
+        \nolinkurl{Plugins}%
+      } (ou extensões) listadas na wiki do Sanic.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Futuro do Sanic}
+  A versão mais recente do Sanic no PyPI é a \texttt{0.7.0},
+  embora a \emph{tag} \texttt{0.8.0} já esteja no repositório.
+  \vfill
+  O status ainda é \emph{Pre-Alpha},
+  mas o desenvolvimento está bastante rápido!
+  \vfill
+  Uma seleção de issues em andamento:
+  \begin{itemize}
+    \item
+      \href{https://github.com/channelcat/sanic/issues/1176}{%
+        \nolinkurl{issue 1176}%
+      }~---
+      O modo de \emph{streaming} está incompleto;
+
+    \item
+      \href{https://github.com/channelcat/sanic/issues/1265}{%
+        \nolinkurl{issue 1265}%
+      }~---
+      Existe a intenção de prover compatibilidade com o ASGI
+      (\emph{Asynchronous Server Gateway Interface});
+  \end{itemize}
+  \vfill
+  Será que saberemos quem é ``Channel Cat'', o autor do Sanic?
+\end{frame}
+
+
+\begin{frame}{Referências}
+  \begin{itemize}
+    \fontsize{.8em}{0}\selectfont
+    \item \url{https://youtu.be/VTHsOSGJHN0}~--- Abertura de Sonic X
+    \item \url{https://youtu.be/3f_cAy8ugvQ}~--- História do meme
+    \item \url{https://youtu.be/of9gIoQpPmA}~--- Reupload do 0nyxheart
+    \item \url{https://knowyourmeme.com/memes/sanic-hegehog}
+    \item \url{https://knowyourmeme.com/memes/gotta-go-fast}
+    \item \url{https://magic.io/blog/uvloop-blazing-fast-python-networking/}
+    \item \url{https://github.com/channelcat/sanic}
+    \item \url{https://sanic.readthedocs.io}
+    \item \url{https://www.reddit.com/r/Python/comments/57i301/}
+  \end{itemize}
+  \vfill
+  \begin{center}\fontsize{2cm}{0}\selectfont
+    FIM!
+  \end{center}
+\end{frame}
+
+
+\end{document}
