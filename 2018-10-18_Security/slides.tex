@@ -55,7 +55,49 @@
 \end{frame}
 
 
+\begin{frame}[fragile]{GPG~-- \emph{GNU Privacy Guard}}
+  O GPG é uma implementação em software livre (GPLv3)
+  que atende ao OpenPGP (maiores detalhes no próximo slide)
+  sem utilizar softwares/algoritmos patenteados/restritos/privados.
+  \begin{minted}{shell}
+    gpg --gen-key # Criar chaves (par público/privado)
+    gpg -k        # Visualizar chaves disponíveis
+
+    # Exportando/importanto chaves públicas (para um dado keyID)
+    gpg --keyserver pgp.mit.edu --send-keys keyID
+    gpg --keyserver pgp.mit.edu --recv-keys keyID
+    gpg --export --armor danilo.bellini@gmail.com > my.key
+    gpg --import my.key
+
+    # Assinatura
+    gpg -b message.txt                       # Assina (cria ".sig")
+    gpg --verify message.txt.sig message.txt # Verifica assinatura
+
+    # Codificando/criptografando (crypt) p/ um destinatário específico
+    gpg -o encrypted.gpg -r danilo.bellini@gmail.com -e message.txt
+
+    # Decodificando/decriptografando (decrypt) com a chave privada
+    gpg -o decrypted.txt -d encrypted.gpg
+
+    # Comandos utilizados na apresentação (além de vim, cat, rm, ...)
+    seq 15 > message.txt     # Cria message.txt c/ sequência de 1 a 15
+    hexdump -C encrypted.gpg # Visualizando arquivos como binários
+  \end{minted}
+\end{frame}
+
+
 \begin{frame}{Referências}
+  O material abaixo está disponível apenas em inglês.
+  \begin{itemize}
+    \item Livro de GPG:
+          \url{https://www.gnupg.org/gph/en/manual/book1.html}
+    \item Tutorial de GPG:
+          \url{https://www.futureboy.us/pgp.html}
+    \item RFC1991 (PGP, obsoleto):
+          \url{https://tools.ietf.org/html/rfc1991}
+    \item RFC4880 (OpenPGP):
+          \url{https://tools.ietf.org/html/rfc4880}
+  \end{itemize}
 \end{frame}
 
 
