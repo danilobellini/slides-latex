@@ -1,0 +1,69 @@
+\documentclass[utf8]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{inconsolata}
+\usepackage{minted}
+
+\definecolor{codebgcolor}{HTML}{FFFFFF}
+\definecolor{coderulecolor}{HTML}{5F7FFF}
+\definecolor{outerbgcolor}{HTML}{F0F0FF}
+
+\setminted{python3, autogobble,
+           breaklines, breakanywhere,
+           breaksymbolindentleft=0pt, breaksymbolindentright=0pt,
+           breaksymbolsepleft=3pt, breaksymbolsepright=3pt,
+           breaksymbolright=...,
+           bgcolor=codebgcolor, style=paraiso-light,
+           fontsize=\fontsize{8pt}{8pt},
+           frame=lines, rulecolor=coderulecolor, framerule=.7pt}
+\setmintedinline{bgcolor={}}
+
+\mode<presentation>
+\usetheme{Warsaw}
+\setbeamercolor{structure}{fg=red!20!black}
+\setbeamercolor{background canvas}{bg=outerbgcolor}
+\beamertemplatenavigationsymbolsempty
+
+\setbeamertemplate{footline}{\leavevmode\hbox{%
+  \begin{beamercolorbox}[wd=.35\paperwidth, ht=2.25ex, dp=1ex, center]
+                        {author in head/foot}
+    \usebeamerfont{author in head/foot}
+      Danilo J. S. Bellini \hfill \texttt{@danilobellini}
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.65\paperwidth, ht=2.25ex, dp=1ex, center]
+                        {title in head/foot}
+    \usebeamerfont{title in head/foot}
+      \insertshorttitle \hfill
+      ETEC Uirapuru -- SP \hfill
+      \insertshortdate \hfill
+      \insertframenumber\,/\,\inserttotalframenumber
+  \end{beamercolorbox}%
+}}
+
+\title{Segurança da Informação}
+\author{Danilo J. S. Bellini \\ \texttt{@danilobellini}}
+\date{2018-10-18}
+
+
+\begin{document}
+
+
+\begin{frame}
+  \titlepage
+  \center Semana de informática \\ ETEC Uirapuru -- SP
+\end{frame}
+
+
+\begin{frame}{Referências}
+\end{frame}
+
+
+\begin{frame}
+  \begin{center}\fontsize{5cm}{2.5cm}\selectfont
+    FIM!
+  \end{center}
+\end{frame}
+
+
+\end{document}
