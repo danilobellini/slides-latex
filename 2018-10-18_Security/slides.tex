@@ -45,6 +45,19 @@
 \author{Danilo J. S. Bellini \\ \texttt{@danilobellini}}
 \date{2018-10-18}
 
+\newcommand{\includesvg}[2]{%
+  \ifnum\pdfstrcmp{\pdffilemoddate{#2.svg}}%
+                  {\pdffilemoddate{#2.pdf}}>0%
+    {\immediate\write18%
+     {inkscape -z -D --file=#2.svg --export-pdf=#2.pdf --export-latex}%
+    }%
+  \fi%
+  \centering%
+  \resizebox{#1}{!}{%
+    \input{#2.pdf_tex}%
+  }%
+}
+
 
 \begin{document}
 
