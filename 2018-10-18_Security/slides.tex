@@ -187,6 +187,47 @@
 \end{frame}
 
 
+\begin{frame}[fragile]{Diffie-Hellman:
+                       Exemplo de algoritmo para troca de chave}
+  \begin{columns}[c]
+    \column{.5\textwidth}
+    \includesvg{\textwidth}{Diffie-Hellman_Key_Exchange}
+
+    \column{.5\textwidth}
+    \resizebox{\textwidth}{!}{%
+      \begin{tabular}{rl}
+        Número primo (público): & $p$ \\
+        Base (público): & $g$ \\
+        Chave privada da Alice: & $a$ \\
+        Chave pública da Alice: & $A = g^a \mod p$ \\
+        Chave privada do Bob: & $b$ \\
+        Chave pública do Bob: & $B = g^b \mod p$ \\
+        Número compartilhado: & $A^b \equiv B^a \mod p$
+      \end{tabular}%
+    }
+    \vspace{.5em}\vfill
+    Exemplo:
+    \begin{minted}{python}
+      # Alice e Bob combinam os parâmetros
+      p = 2551
+      g = 2
+
+      # Criam chaves privadas em silêncio
+      a = 45
+      b = 29
+
+      # Calculam e trocam chaves públicas
+      A = (g ** a) % p          # 2285
+      B = (g ** b) % p          # 207
+
+      # Alice e Bob possuem um segredo!
+      secret = (A ** b) % p     # 414
+      secret = (B ** a) % p     # 414
+    \end{minted}
+  \end{columns}
+\end{frame}
+
+
 \begin{frame}[fragile]{GPG~-- \emph{GNU Privacy Guard}}
   O GPG é uma implementação em software livre (GPLv3)
   que atende ao OpenPGP (maiores detalhes no próximo slide)
@@ -230,6 +271,8 @@
     \item RFC4880 (OpenPGP):
           \url{https://tools.ietf.org/html/rfc4880}
   \end{itemize}
+  Todas as imagens utilizadas nos slides sem fonte explícita
+  foram obtidas do Wikipedia.
 \end{frame}
 
 
