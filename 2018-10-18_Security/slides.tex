@@ -5,6 +5,7 @@
 \usepackage{inconsolata}
 \usepackage{minted}
 \usepackage[absolute, overlay]{textpos}
+\usepackage{graphicx}
 \usepackage{changepage} % adjustwidth environment
 
 \definecolor{codebgcolor}{HTML}{FFFFFF}
@@ -72,6 +73,12 @@
 \begin{frame}
   \titlepage
   \center Semana de informática \\ ETEC Uirapuru -- SP
+  \begin{textblock}{0}(.1, .5)%
+    \includegraphics[height=70pt]{logo-etec-uirapuru.png}%
+  \end{textblock}
+  \begin{textblock}{0}(.8, .5)%
+    \includegraphics[height=70pt]{banner.png}%
+  \end{textblock}
 \end{frame}
 
 
@@ -358,7 +365,9 @@
           \url{https://tools.ietf.org/html/rfc4880}
   \end{itemize}
   Todas as imagens utilizadas nos slides sem fonte explícita
-  foram obtidas do Wikipedia.
+  foram obtidas do Wikipedia,
+  exceto as do slide inicial,
+  as quais foram obtidas em \url{http://etecuirapuru.com.br/}.
 \end{frame}
 
 
