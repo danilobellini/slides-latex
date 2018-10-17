@@ -352,6 +352,39 @@
 \end{frame}
 
 
+\begin{frame}[fragile]{Tomb: armazenamento criptografado em um arquivo}
+  Discos rígidos, SSDs, SDs e outras mídias
+  normalmente não estão criptografados.
+  \emph{Tomb} permite criarmos diretórios criptografados
+  com uma chave criptografada com GPG escondida em uma imagem.
+  \vfill
+  \begin{minted}{shell}
+    tomb dig new.tomb -s 50          # Cria o new.tomb com 50MB
+    tomb forge new.key -g            # Cria uma chave encriptada com GPG
+    tomb lock new.tomb -k new.key -g # Atribui a chave e formata o new.tomb
+
+    tomb open new.tomb -k new.key -g # Monta o new como se fosse um pendrive
+    tomb close new                   # Desmonta o new
+
+    # Esteganografia
+    cp EnigmaMachine.jpg new.jpg     # Cópia para não perder a imagem original
+    tomb bury new.jpg -k new.key -g  # Armazena chave (+ senha) na imagem
+    tomb exhume new.jpg -k copy.key  # Extrai a chave da imagem
+    tomb open new.tomb -k new.jpg -g # Podemos usar a imagem direto
+  \end{minted}
+  \vfill
+  \begin{columns}[c]
+    \column{.15\textwidth}
+    \includegraphics[height=60pt]{EnigmaMachine.jpg}
+    \column{.85\textwidth}
+    \centering
+    Quem imaginaria que a imagem ao lado poderia conter uma chave?
+    \vfill
+    Use senhas fortes (mais sobre isso em breve)!
+  \end{columns}
+\end{frame}
+
+
 \begin{frame}{Referências}
   O material abaixo está disponível apenas em inglês.
   \begin{itemize}
@@ -359,6 +392,10 @@
           \url{https://www.gnupg.org/gph/en/manual/book1.html}
     \item Tutorial de GPG:
           \url{https://www.futureboy.us/pgp.html}
+    \item Página oficial do Tomb:
+          \url{https://www.dyne.org/software/tomb/}
+    \item Resumo sobre o Tomb:
+          \url{https://pujol.io/blog/tomb-with-gpg-keys/}
     \item RFC1991 (PGP, obsoleto):
           \url{https://tools.ietf.org/html/rfc1991}
     \item RFC4880 (OpenPGP):
