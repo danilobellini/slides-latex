@@ -4,6 +4,8 @@
 \usepackage[brazil]{babel}
 \usepackage{inconsolata}
 \usepackage{minted}
+\usepackage[absolute, overlay]{textpos}
+\usepackage{changepage} % adjustwidth environment
 
 \definecolor{codebgcolor}{HTML}{FFFFFF}
 \definecolor{coderulecolor}{HTML}{5F7FFF}
@@ -45,6 +47,11 @@
 \author{Danilo J. S. Bellini \\ \texttt{@danilobellini}}
 \date{2018-10-18}
 
+\setlength{\TPHorizModule}{\paperheight}
+\setlength{\TPVertModule}{\paperheight}
+
+\renewcommand{\thefootnote}{[\arabic{footnote}]}
+
 \newcommand{\includesvg}[2]{%
   \ifnum\pdfstrcmp{\pdffilemoddate{#2.svg}}%
                   {\pdffilemoddate{#2.pdf}}>0%
@@ -65,6 +72,57 @@
 \begin{frame}
   \titlepage
   \center Semana de informática \\ ETEC Uirapuru -- SP
+\end{frame}
+
+
+\begin{frame}{O que é segurança?}
+  Estar livre de perigos? Minimizar os riscos?
+  \vfill
+  Em inglês há duas palavras: safety VS security\footnote{
+    Para uma definição mais completa dessas palavras, veja
+    \url{http://www.iot.ntnu.no/users/albrecht/rapporter/%
+                                notat\%20safety\%20v\%20security.pdf}
+  }
+  \begin{itemize}
+    \item \emph{Safe} refere-se à proteção
+          sobre acontecimentos indesejáveis do acaso;
+    \item \emph{Secure} refere-se à proteção
+          contra acontecimentos intencionais.
+          É aqui que se encaixa a segurança da informação.
+  \end{itemize}
+  \vfill
+  Aspectos da segurança da informação:
+  \begin{itemize}
+    \item Confidencialidade / Privacidade
+    \item Integridade
+    \item Disponibilidade
+  \end{itemize}
+  \begin{textblock}{0}(.85, .6)%
+    \includesvg{110pt}{Crypto_key}%
+  \end{textblock}
+\end{frame}
+
+
+\begin{frame}{Criptografia}
+  Criptografia é a prática e o estudo
+  das técnicas de armazenamento e comunicação de informação
+  na presença de terceiros/adversários.
+  \vfill
+  Técnicas tradicionais incluem:
+  \begin{itemize}
+    \item Criptografia de chave simétrica
+          (chave única, de conhecimento exclusivo das partes)
+    \item Criptografia de chave pública
+          (pares de chave pública/privada para cada parte)
+    \item Funções de \emph{hash} (sem chave)
+  \end{itemize}
+  \vfill
+  Objetivos:
+  \begin{itemize}
+    \item \emph{Sign}, assinatura (integridade)
+    \item \emph{Encrypt/Decrypt}, encriptação/decriptação
+          (confidencialidade)
+  \end{itemize}
 \end{frame}
 
 
@@ -184,6 +242,34 @@
             chars.insert(end, " ")
         return "".join(chars)
   \end{minted}
+\end{frame}
+
+
+\begin{frame}{Chave pública/privada}
+  Analogia:
+  \begin{adjustwidth}{2em}{1em}\emph{
+    Envio pelo correio um cadeado aberto sem a chave,
+    o destinatário recebe,
+    tranca um pacote com o cadeado e envia p/ mim.
+  }\end{adjustwidth}
+  Nesse exemplo, o cadeado desempenha o papel de chave pública,
+  e a chave do cadeado desempenha o papel de chave privada.
+  \vfill
+  Vamos ver:
+  \begin{itemize}
+    \item
+    um algoritmo de chave pública/privada
+    utilizado para troca de chave simétrica
+    \item
+    um exemplo prático de uso de chave pública/privada
+    no OpenPGP\footnote{
+      PGP significa \emph{Pretty Good Privacy},
+      um software comercial criado em 1991.
+      Sua segunda versão tornou-se o [hoje obsoleto] padrão RFC1991.
+      A menos de uma atualização relativa ao algoritmo Camellia,
+      RFC4880 (OpenPGP) é a versão mais recente do padrão.
+    }.
+  \end{itemize}
 \end{frame}
 
 
