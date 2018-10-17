@@ -55,6 +55,125 @@
 \end{frame}
 
 
+\begin{frame}[fragile]{Cifras de César, Vigenère e autochave}
+  \begin{columns}[c]
+    \column{.6\textwidth}
+    Cifra de César (possui 1 parâmetro)
+    \resizebox{\textwidth}{!}{%
+      \begin{tabular}{rl}
+             Mensagem: & \texttt{EU GOSTO DE LIMONADA} \\ \hline
+                Chave: & \texttt{C} (desloca 2 no alfabeto) \\
+        Texto cifrado: & \texttt{GW IQUVQ FG NKOQPCFC}
+      \end{tabular}%
+    }
+    \vspace{.5em}\vfill
+    Cifra de Vigenère (chave simétrica)
+    \resizebox{\textwidth}{!}{%
+      \begin{tabular}{rl}
+             Mensagem: & \texttt{EU GOSTO DE LIMONADA} \\ \hline
+                Chave: & \texttt{MENTIRA} \\
+        Chave efetiva: & \texttt{ME NTIRA ME NTIRAMEN} \\
+        Texto cifrado: & \texttt{QY THAKO PI YBUFNMHN} \\ \hline
+                Chave: & \texttt{PAGAZAQ} \\
+        Chave efetiva: & \texttt{PA GAZAQ PA GAZAQPAG} \\
+        Texto cifrado: & \texttt{TU MORTE SE RILODPDG}
+      \end{tabular}
+    }
+    \vspace{.5em}\vfill
+    Autochave (chave simétrica)
+    \resizebox{\textwidth}{!}{%
+      \begin{tabular}{rl}
+             Mensagem: & \texttt{EU GOSTO DE LIMONADA} \\ \hline
+                Chave: & \texttt{PAGAZAQP} \\
+        Chave efetiva: & \texttt{PA GAZAQ PE UGOSTODE} \\
+        Texto cifrado: & \texttt{TU MORTE SI FOAGGOGE}
+      \end{tabular}%
+    }
+
+    \column{.5\textwidth}
+    A cifra de César transforma cada caractere da mensagem
+    usando esta tabela:
+    \vspace{.5em}\vfill
+    \resizebox{\textwidth}{!}{%
+      \begin{tabular}{c|c|c|c|c|c}
+        \texttt{A} \textrightarrow \texttt{C} &
+        \texttt{B} \textrightarrow \texttt{D} &
+        \texttt{C} \textrightarrow \texttt{E} &
+        \texttt{D} \textrightarrow \texttt{F} &
+        \texttt{E} \textrightarrow \texttt{G} &
+        \texttt{F} \textrightarrow \texttt{H} \\
+        \texttt{G} \textrightarrow \texttt{I} &
+        \texttt{H} \textrightarrow \texttt{J} &
+        \texttt{I} \textrightarrow \texttt{K} &
+        \texttt{J} \textrightarrow \texttt{L} &
+        \texttt{K} \textrightarrow \texttt{M} &
+        \texttt{L} \textrightarrow \texttt{N} \\
+        \texttt{M} \textrightarrow \texttt{O} &
+        \texttt{N} \textrightarrow \texttt{P} &
+        \texttt{O} \textrightarrow \texttt{Q} &
+        \texttt{P} \textrightarrow \texttt{R} &
+        \texttt{Q} \textrightarrow \texttt{S} &
+        \texttt{R} \textrightarrow \texttt{T} \\
+        \texttt{S} \textrightarrow \texttt{U} &
+        \texttt{T} \textrightarrow \texttt{V} &
+        \texttt{U} \textrightarrow \texttt{W} &
+        \texttt{V} \textrightarrow \texttt{X} &
+        \texttt{W} \textrightarrow \texttt{Y} &
+        \texttt{X} \textrightarrow \texttt{Z} \\
+        \texttt{Y} \textrightarrow \texttt{A} &
+        \texttt{Z} \textrightarrow \texttt{B}
+      \end{tabular}%
+    }
+    \vfill
+    \begin{minted}{python}
+      # Código das funções no próximo slide
+      msg = "EU GOSTO DE LIMONADA"
+      cesar(msg, key="C")
+      vigenere(msg, key="MENTIRA")
+      vigenere(msg, key="PAGAZAQ")
+      autokey(msg, key="PAGAZAQP")
+    \end{minted}
+    \vfill
+    \emph{Desafio}: escrever uma função para cada algoritmo de cifra
+                    que encontra o texto original
+                    dados a chave e o texto cifrado.
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}[fragile]{Cifra de César, Vigenère e autochave em Python}
+  \begin{minted}{python}
+    from itertools import cycle, accumulate
+    from string import ascii_uppercase as alphabet
+
+    def shift_table(key):
+        idx = alphabet.find(key)
+        return str.maketrans(alphabet, alphabet[idx:] + alphabet[:idx])
+
+    def cesar(msg, key):
+        return msg.translate(shift_table(key))
+
+    def vigenere(msg, key):
+        parts = msg.split() ; joined = "".join(parts)
+        chars = [ch.translate(shift_table(k))
+                 for ch, k in zip(joined, cycle(key))]
+        positions = accumulate(map(len, parts[:-1]))
+        for end in list(positions)[::-1]:
+            chars.insert(end, " ")
+        return "".join(chars)
+
+    def autokey(msg, key):
+        parts = msg.split() ; joined = "".join(parts)
+        chars = [ch.translate(shift_table(k))
+                 for ch, k in zip(joined, key + joined)]
+        positions = accumulate(map(len, parts[:-1]))
+        for end in list(positions)[::-1]:
+            chars.insert(end, " ")
+        return "".join(chars)
+  \end{minted}
+\end{frame}
+
+
 \begin{frame}[fragile]{GPG~-- \emph{GNU Privacy Guard}}
   O GPG é uma implementação em software livre (GPLv3)
   que atende ao OpenPGP (maiores detalhes no próximo slide)
