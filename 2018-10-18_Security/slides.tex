@@ -825,6 +825,80 @@
 \end{frame}
 
 
+\begin{frame}{Autenticação quebrada}
+  Já falamos bastante sobre senhas fracas e ataques de dicionário!
+  \vfill
+  Outros exemplos:
+  \vfill
+  \centering
+  Recuperação de senha com KBA \\
+  (\emph{Knowledge-Based Authentication}): \\
+  perguntas sobre o usuário
+  utilizando informações muitas vezes disponível publicamente
+  (permite o ataque por terceiros)
+  ou incorretas (\emph{bricking} para o próprio usuário).
+  \vfill
+  Hash fraco ou mal utilizado \\ (sem o ``sal'' / \emph{nonce}): \\
+  \emph{Rainbow tables}, tabelas com valores pré-computados de hashes,
+  podem ser utilizadas para reverter hashes,
+  principalmente quando as mensagens são curtas
+  (e.g. hashes de senhas).
+\end{frame}
+
+
+\begin{frame}[fragile]{Exemplo de falha de configuração no NGINX}
+  \begin{minted}{nginx}
+    upstream meu_servidor {
+      server 127.0.0.1:5000 fail_timeout=0;
+    }
+
+    server {
+      listen 80;
+      location /static/ {
+        alias /app/static_files/;
+        expires 30d;
+      }
+      root /app;
+      location / {
+        try_files $uri @proxy_to_app;
+      }
+      location @proxy_to_app {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_pass http://meu_servidor;
+      }
+    }
+  \end{minted}
+  Código do servidor em \texttt{/app} disponível para download?
+  Inclusive arquivos como \texttt{.env} ou \texttt{settings.py}
+  com credenciais?
+\end{frame}
+
+
+\begin{frame}[fragile]{Exposição de dados sensíveis}
+  Banco de dados exposto?
+  Solução tradicional:
+  \emph{Firewall} bloqueando acesso à porta do banco
+  + acesso via túnel SSH (\emph{Secure Shell})!
+  \begin{minted}{shell}
+    ssh -L 5432:db.server.com.br:5432 -v username@123.123.123.123
+  \end{minted}
+  \vfill\hrule\vspace{2pt}\hrule\vfill
+  \centering
+  Credenciais via HTTP ao invés de HTTPS?
+  Qualquer um observando o tráfego da rede poderá ver sua senha!
+  Há alternativas ``desesperadas''
+  para tentar garantir a confidencialidade da senha
+  mesmo sem HTTPS
+  (e.g. roteador Linksys E2500
+        troca a senha pelo hash no \emph{front-end}
+        antes de enviar),
+  mas, além de complicadas,
+  não garantem a integridade do conteúdo e a identidade da fonte.
+\end{frame}
+
+
 \begin{frame}{Referências}
   \fontsize{9pt}{9pt}\selectfont
   A maioria do material está disponível apenas em inglês.
