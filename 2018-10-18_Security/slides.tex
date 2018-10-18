@@ -790,6 +790,41 @@
 \end{frame}
 
 
+\begin{frame}{Injection (Injeção de código)}
+  \inputminted{python}{calc.py}%
+  \vfill%
+  \inputminted{shell}{calc_run.sh}
+\end{frame}
+
+
+\begin{frame}{Injection: como prevenir}
+  Para consertar a vulnerabilidade no exemplo do slide anterior,
+  podemos limitar a entrada
+  para que os parâmetros sejam sempre números em ponto flutuante:
+  \vfill
+  \inputminted{python}{calc_fix.py}%
+  \vfill%
+  Entradas de ``potenciais adversários''
+  devem ser sempre validadas/filtradas/sanitizadas,
+  principalmente para uso em algo como \texttt{exec}/\texttt{eval}.
+  Esse exemplo foi artificial para ilustrar a ideia,
+  o caso mais relevante nesta categoria de vulnerabilidade
+  é o \emph{SQL injection},
+  em que a string enviada para o bancos de dados
+  contém fragmentos vindos do usuário
+  (ver próximo slide).
+\end{frame}
+
+
+\begin{frame}
+  \centering
+  \includegraphics[width=\textwidth]{18mpenleoksq8jpg.jpg}
+  \fontsize{10pt}{10pt}\selectfont
+  \url{https://gizmodo.com/5498412/%
+       sql-injection-license-plate-hopes-to-foil-euro-traffic-cameras}
+\end{frame}
+
+
 \begin{frame}{Referências}
   \fontsize{9pt}{9pt}\selectfont
   A maioria do material está disponível apenas em inglês.
