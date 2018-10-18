@@ -385,6 +385,118 @@
 \end{frame}
 
 
+\begin{frame}{\emph{Hash},
+              funções de espalhamento ou dispersão criptográfica}
+  Um valor ou código \emph{hash}
+  (também conhecido como \emph{digest} ou ``resumo'')
+  é o resultado de uma função de \emph{hash} para uma dada mensagem.
+  No contexto da criptografia, funções de \emph{hash} são:
+  \begin{itemize}
+    \item Determinísticas
+          (mesma mensagem $\Rightarrow$ mesmo \emph{hash})
+    \item ``Caóticas'' (pequenas mudanças na entrada
+                        mudam o hash completamente)
+    \item Extremamente difíceis de reverter
+          (somente podemos obter a mensagem a partir do hash
+           por tentativa e erro)
+    \item Extremamente difíceis de colidir
+          (idealmente nunca encontramos
+           mensagens diferentes com o mesmo \emph{hash})
+  \end{itemize}
+  \vfill
+  Exemplos de algoritmos:
+  \begin{itemize}
+    \item Checksum e dígitos verificadores (CPF, RG, ISSN, etc.)
+    \item MD5 (foi quebrado, útil para fins didáticos)
+    \item SHA-1 (usado em torrents, git, etc.;
+                 teve uma custosa colisão intencional de hashes de PDFs
+                 no \emph{SHAttered})
+    \item SHA-2 (há $6$ funções diferentes:
+                 SHA-224, SHA-256, SHA-384, SHA-512,
+                 SHA-512/224, SHA-512/256)
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Hashes no Linux}
+  \begin{minted}{shell}
+    $ echo "O segredo é *#(U*#E, não conta para ninguém" > msg.txt
+
+    $ md5sum msg.txt
+    30a4e40dc44b8d1579a086f3e54cb165  msg.txt
+
+    $ sha1sum msg.txt
+    df9da1b3ec550a0ae39e70c3d455940fbd74efa1  msg.txt
+
+    $ sha224sum msg.txt
+    99ef0cc5ba6a58bbee572cc2527dc469d8c9ea0998885ebe0e558c0b  msg.txt
+
+    $ sha256sum msg.txt
+    0b9b5d4b7dcee9fa58653e4e782abf8f40da985d77467f47c9e44848ad43b4d3  msg.txt
+
+    # Todos possuem validação com -c
+
+    $ md5sum -c <<< "30a4e40dc44b8d1579a086f3e54cb165 msg.txt"
+    msg.txt: OK
+
+    $ md5sum -c <<< "30a4e40dc44b8d1579a086f3e54cb167 msg.txt"
+    msg.txt: FAILED
+    md5sum: WARNING: 1 computed checksum did NOT match
+  \end{minted}
+\end{frame}
+
+
+\begin{frame}[fragile]{Hashes em Python}
+  \begin{minted}{python}
+    >>> import hashlib                  # Biblioteca padrão
+    >>> with open("msg.txt", "rb") as msg_file:
+    ...     msg = msg_file.read()
+    ...
+    >>> hashlib.md5(msg).hexdigest()    # Hashes como strings comuns
+    '30a4e40dc44b8d1579a086f3e54cb165'
+    >>> hashlib.sha256(msg).hexdigest()
+    '0b9b5d4b7dcee9fa58653e4e782abf8f40da985d77467f47c9e44848ad43b4d3'
+    >>> hashlib.sha224(msg).hexdigest()
+    '99ef0cc5ba6a58bbee572cc2527dc469d8c9ea0998885ebe0e558c0b'
+    >>> hashlib.sha1(msg).hexdigest()
+    'df9da1b3ec550a0ae39e70c3d455940fbd74efa1'
+  \end{minted}
+  \vfill
+  \begin{columns}[c]
+    \column{.8\textwidth}
+    \centering
+    Tá legal, verificar \emph{hashes} valida
+    a integridade da mensagem,
+    seja ela um texto, um arquivo ou um pedaço de um arquivo...
+    mas como é que isso pode ajudar na confidencialidade?
+    \column{.2\textwidth}
+    \includesvg{\textwidth}{Sha-family}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}{Certificados da Python Sudeste}
+  Objetivo:
+  \begin{itemize}
+    \item Gerar certificados personalizados por tipo de participação
+          (possivelmente mais de um certificado por pessoa)
+    \item Autenticar certificados por parte de quem possui o código
+          e outras informações fundamentais
+    \item Código $100\%$ \emph{open source}
+    \item Utilizar somente dados públicos, apenas em um front-end
+          (não há banco de dados,
+           o servidor é o de páginas estáticas no GitHub)
+    \item Não tornar pública a lista de participantes (privacidade)
+  \end{itemize}
+  \vfill
+  A solução adotada utilizou SHA-3.
+  A lista de hashes que autenticam um certificado é pública,
+  porém os códigos estão associados
+  a outras informações necessárias para autenticar,
+  e é extremamente custoso verificar as combinações por força bruta.
+\end{frame}
+
+
 \begin{frame}
   \centering
   \includegraphics[width=.8\textwidth]{password_strength.png}
@@ -416,7 +528,8 @@
 
 
 \begin{frame}{Referências}
-  O material abaixo está disponível apenas em inglês.
+  \fontsize{11pt}{11pt}\selectfont
+  A maioria do material está disponível apenas em inglês.
   \begin{itemize}
     \item Livro de GPG:
           \url{https://www.gnupg.org/gph/en/manual/book1.html}
@@ -426,6 +539,13 @@
           \url{https://www.dyne.org/software/tomb/}
     \item Resumo sobre o Tomb:
           \url{https://pujol.io/blog/tomb-with-gpg-keys/}
+    \item SHAttered:
+          \url{https://shattered.io/}
+    \item Repositório do gerador de certificados
+          da Python Sudeste 2018:
+          \url{https://github.com/danilobellini/certificados-pyse2018}
+    \item Repositório da página da Python Sudeste 2018:
+          \url{https://github.com/pythonsudeste/pythonsudeste2018-site}
     \item RFC1991 (PGP, obsoleto):
           \url{https://tools.ietf.org/html/rfc1991}
     \item RFC4880 (OpenPGP):
