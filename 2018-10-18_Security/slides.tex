@@ -633,6 +633,45 @@
 \end{frame}
 
 
+\begin{frame}[fragile]{Pass: \emph{The Standard Unix Password Manager}}
+  \begin{columns}[c]
+    \column{.8\textwidth}
+    Pass é um software livre (GPLv2+), um gerenciador de senhas
+    com armazenamento das senhas em um repositório \emph{git} local
+    criptografado com GPG.
+    \column{.2\textwidth}
+    \centering
+    \includegraphics[width=.8\textwidth]{fake.png}
+    \vfill
+    \fontsize{7pt}{7pt}\selectfont
+    QRcode ``fraco'' p/ TOTP
+  \end{columns}
+  \vfill
+  \begin{minted}{shell}
+    pass init # Cria o repositório git em ~/.password-store
+    pass      # Listar árvore de nomes de arquivos no repositório (não senhas)
+
+    pass generate twitter        # Gerar senha no arquivo "twitter"
+    pass generate -n facebook 18 # 18 caracteres, sem caracteres especiais
+    pass generate -c email       # "-c" copia para a área de transferência
+
+    pass edit facebook # Edição da senha em editor
+    pass insert etec   # Inserção manual (também pode sobrescrever)
+
+    pass mv etec etec.uirapuru # Renomear (mover arquivo)
+    pass rm facebook           # Remover
+
+    pass email      # Acesso à senha
+    pass -c twitter # "-c" copia para a área de transferência
+
+    # TOTP (com qrencode, zbar e plugin pass-otp)
+    qrencode -o fake.png 'otpauth://totp/noone@nowhere?secret=AAAA&issuer=fake'
+    zbarimg -q --raw fake.png | pass otp insert fake
+    pass otp fake # Geração do TOTP (c/ -c copia na área de transferência)
+  \end{minted}
+\end{frame}
+
+
 \begin{frame}{2FA e MFA: \emph{multi-factor authentication}}
   MFA significa usar mais de um fator
   durante um processo de autenticação.
@@ -702,7 +741,7 @@
 
 
 \begin{frame}{Referências}
-  \fontsize{11pt}{11pt}\selectfont
+  \fontsize{10pt}{10pt}\selectfont
   A maioria do material está disponível apenas em inglês.
   \begin{itemize}
     \item Livro de GPG:
@@ -713,6 +752,8 @@
           \url{https://www.dyne.org/software/tomb/}
     \item Resumo sobre o Tomb:
           \url{https://pujol.io/blog/tomb-with-gpg-keys/}
+    \item Página oficial do Pass:
+          \url{https://www.passwordstore.org/}
     \item SHAttered:
           \url{https://shattered.io/}
     \item Repositório do gerador de certificados
