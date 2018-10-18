@@ -497,6 +497,32 @@
 \end{frame}
 
 
+\begin{frame}{Senhas}
+  Existem duas tarefas para as quais
+  credenciais de acesso são necessárias:
+  \begin{itemize}
+    \item Autenticação: identificação de quem está solicitando
+    \item Autorização: verificação o solicitante tem permissão
+                       de realizar determinada solicitação
+  \end{itemize}
+  \vfill
+  Senhas ``fortes'' são importantes para, no mínimo,
+  evitarmos o ataque por \emph{brute force} (força bruta),
+  que consiste em tentar adivinhar a senha por tentativa e erro,
+  exaustivamente.
+  Muitos sistemas bloqueiam repetidas tentativas de acesso
+  e/ou dificultam o processo com CAPTCHAs,
+  mas o ideal é não precisar depender disso.
+  \vfill
+  Uma forma de ataque, chamada de \emph{ataque de dicionário},
+  consiste em algo similar à força bruta,
+  mas restrito àquilo que são consideradas escolhas mais prováveis:
+  data de nascimento, data de casamento,
+  algum evento considerado importante, nome de parente,
+  nomes de animais, ideias, projetos, filmes/livros favoritos, etc..
+\end{frame}
+
+
 \begin{frame}
   \centering
   \includegraphics[width=.8\textwidth]{password_strength.png}
@@ -504,6 +530,32 @@
   \vfill
   São $\approx 44$ bits se considerarmos mensagens de $4$ palavras
    em um universo de $2000$ palavras equiprováveis
+\end{frame}
+
+
+\begin{frame}{Políticas para escolha de senhas}
+  \begin{columns}[c]
+    \column{.5\textwidth}
+    \begin{itemize}
+      \item Não saia chutando todas as senhas que você usa,
+            alguém pode estar gravando tudo
+      \item Não deixe senhas trafegar a rede sem criptografia
+            (verifique o ``cadeado verde'' no navegador)
+      \item Nunca utilize a mesma senha em dois sistemas diferentes,
+            do contrário correrá o risco de que alguém de um sistema
+            consiga acessar sua conta do outro sistema
+    \end{itemize}
+    \column{.5\textwidth}
+    Memorizar muitas senhas fortes não é fácil.
+    Quando precisamos trocá-las com frequência
+    (o que não é recomendado),
+    a tendência é que as enfraquecemos cada vez mais,
+    ou adotamos procedimentos inapropriados:
+    \begin{itemize}
+      \item Enviar e-mail/mensagem com a senha para si próprio
+      \item Colar um \emph{post-it} na tela do computador com a senha
+    \end{itemize}
+  \end{columns}
 \end{frame}
 
 
@@ -520,10 +572,132 @@
 \end{frame}
 
 
+\begin{frame}{Armazenamento de senhas e \emph{password managers}}
+  O que queremos com a senha?
+  \begin{itemize}
+    \item Validar para fins de autenticação ou autorização?
+          Não precisamos da senha,
+          precisamos apenas de um validador (\emph{hash}).
+    \item Fornecer para outro sistema? Preciso da senha!
+  \end{itemize}
+  \vfill
+  Como poderíamos armazenar um validador de senhas?
+  Apenas para validar, o ideal seria não guardar a senha.
+  \vfill
+  Podemos usar funções de hash!
+  A senha pode ser justaposta
+  com um bloco constante (denominado \emph{salt} ou \emph{nonce}),
+  e armazenamos apenas o hash do resultado.
+  Se a mesma senha for fornecida duas vezes,
+  o resultado precisa ser igual, o que basta para validar.
+  \vfill
+  Porém, softwares \emph{password managers} não têm alternativa,
+  a não ser armazenarem a senha.
+  Como nossas senhas são armazenadas, quem acessa,
+  e como elas trafegam a rede?
+  São realmente softwares em que podemos confiar?
+\end{frame}
+
+
 \begin{frame}
   \centering
   \includegraphics[width=.7\textwidth]{encryptic.png}
   \url{https://www.xkcd.com/1286/}
+\end{frame}
+
+
+\begin{frame}{OTP: \emph{one time password}}
+  OTP são senhas de uso único,
+  as quais posteriormente são descartáveis.
+  Códigos enviados por SMS ou gerados por um aplicativo
+  para liberar um acesso são exemplos de tais senhas.
+  \vfill
+  Podem ser gerados de diferentes formas,
+  mas costumam ser hashes sobre um token fixo e alguma
+  informação adicional como:
+  \begin{itemize}
+    \item Instante atual (e.g. TOTP\footnote{
+      RFC6238, \emph{Time-based OTP}, uma extensão do HOTP
+    })
+    \item Contador (e.g. HOTP\footnote{
+      RFC4226, \emph{HMAC-based OTP}
+    })
+    \item OTP anterior (chain)
+    \item Aleatório (necessita armazenamento no servidor)
+  \end{itemize}
+  \vfill
+  O mais comum é o TOTP de 6 dígitos\footnote{
+    Dígitos menos significativos,
+    recomendação do apêndice E do RFC4226.
+  }.
+\end{frame}
+
+
+\begin{frame}{2FA e MFA: \emph{multi-factor authentication}}
+  MFA significa usar mais de um fator
+  durante um processo de autenticação.
+  2FA é o MFA com exatos $2$ fatores.
+  \vfill
+  ``Verbos'' categorizando possíveis fatores:
+  \begin{itemize}
+    \item ``Conhecer'':
+          Senhas, PIN (\emph{personal identification number}),
+          questões sobre a vida/moradia da pessoa
+    \item ``Possuir'':
+          Cartões, hardware gerador de tokens, tabela de valores,
+          número de telefone, conta de e-mail
+    \item ``Ser'':
+          Biometria (digital, voz, aparência), local de acesso
+  \vfill
+  \end{itemize}
+  \vfill
+  \emph{Tokens} são códigos auto-gerados, normalmente temporários.
+  Seu uso é similar ao das senhas,
+  mas tradicionalmente categorizados com o verbo ``possuir'',
+  em referência ao gerador dos tokens
+  (mesmo que o gerador seja, em essência, apenas uma chave).
+  OTPs são \emph{tokens} que só podem ser usados uma vez.
+\end{frame}
+
+
+\begin{frame}{\emph{Fallback}, \emph{bricking},
+              privacidade es disponibilidade no MFA}
+  \fontsize{10pt}{10pt}\selectfont
+  \begin{columns}[c]
+    \column{.5\textwidth}
+    Códigos gerados dinamicamente
+    podem dificultar um \emph{brute force} exaustivo?
+    \vspace{.5em}\vfill
+    Depende!
+    A ``força'' do TOTP está fundamentalmente no segredo
+    usado como semente geradora (o QR code exibido),
+    e ninguém deve conhecer esse segredo.
+    \vspace{.5em}\vfill
+    SMS não é seguro! Evitem ao máximo depender de SMS como fator.
+    \vspace{.5em}\vfill
+    MFA não é desculpa para deixar sua senha ser fraca!
+    \vspace{.5em}\vfill
+    Certos fatores de autenticação
+    exigem o envolvimento de terceiros
+    (e.g. empresa especialista em reconhecimento biométrico).
+    \column{.5\textwidth}
+    \emph{Bricking} é a impossibilidade de utilizar um sistema
+    devido ao bloqueio ao acesso.
+    \vspace{.5em}\vfill
+    E se eu esquecer a senha?
+    E se meu celular que gera os OTPs quebrar ou for roubado?
+    Essas são possibilidades de \emph{bricking},
+    as alternativas nesses casos costumam ser:
+    \begin{itemize}
+      \item Solicitação de troca de senha usando o e-mail
+      \item OTPs de \emph{fallback} independentes do tempo
+      \item Contato direto com pessoas (e-mail, telefone, presencial)
+    \end{itemize}
+    \vspace{.5em}\vfill
+    E se minha biometria for ``roubada''
+    (e.g. adesivos de impressão digital)?
+    Não dá para trocar!
+  \end{columns}
 \end{frame}
 
 
@@ -550,6 +724,35 @@
           \url{https://tools.ietf.org/html/rfc1991}
     \item RFC4880 (OpenPGP):
           \url{https://tools.ietf.org/html/rfc4880}
+    \item RFC4226 (HOTP):
+          \url{https://tools.ietf.org/html/rfc4226}
+    \item RFC6238 (TOTP):
+          \url{https://tools.ietf.org/html/rfc6238}
+  \end{itemize}
+  \vfill\centering [... Continua no próximo slide ...]
+\end{frame}
+
+
+\begin{frame}{Referências}
+  \fontsize{11pt}{11pt}\selectfont
+  \begin{itemize}
+    \item Time to rethink mandatory password changes:
+          \url{https://www.ftc.gov/news-events/blogs/techftc/2016/03/%
+               time-rethink-mandatory-password-changes}
+    \item Want Safer Passwords? Don't Change Them So Often:
+          \url{https://www.wired.com/2016/03/%
+               want-safer-passwords-dont-change-often/}
+    \item NIST is no longer recommending 2FA using SMS:
+          \url{https://www.schneier.com/blog/archives/2016/08/%
+               nist_is_no_long.html}
+    \item Fixing the cell network flaw
+          that lets hackers drain bank accounts
+          \url{https://www.wired.com/2017/05/%
+               fix-ss7-two-factor-authentication-bank-accounts/}
+    \item Fixing the cell network flaw
+          that lets hackers drain bank accounts
+          \url{https://www.wired.com/2017/05/%
+               fix-ss7-two-factor-authentication-bank-accounts/}
   \end{itemize}
   Todas as imagens utilizadas nos slides sem fonte explícita
   foram obtidas do Wikipedia,
