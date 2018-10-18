@@ -4,6 +4,7 @@
 \usepackage[brazil]{babel}
 \usepackage{inconsolata}
 \usepackage{minted}
+\usepackage{tabu}
 \usepackage[absolute, overlay]{textpos}
 \usepackage{graphicx}
 \usepackage{changepage} % adjustwidth environment
@@ -740,8 +741,57 @@
 \end{frame}
 
 
+\begin{frame}{\emph{Malwares} VS engenharia social}
+  Nem tudo é vírus/\emph{worm}!
+  Nomes para não faltam
+  para naturezas diferentes de software nocivos/maliciosos:
+  \begin{itemize}
+    \item \emph{Spyware} / \emph{Adware}
+    \item \emph{Phishing}
+    \item \emph{Trojan horse}
+    \item \emph{Ransomware} (cobrança de ``resgate'')
+  \end{itemize}
+  \vfill
+  \centering
+  Qual é o alvo de um software desses (ou de algum ``ataque'') \\
+  (pessoas, tecnologias, empresas)?
+  \vfill
+  Qual é a finalidade?
+  \vfill
+  Exemplo de ataque fundamentado apenas em engenharia social:
+  \url{https://youtu.be/lc7scxvKQOo}
+\end{frame}
+
+
+\begin{frame}{Vulnerabilidades na web}
+  OWASP (\emph{Open Web Application Security Project})
+  é uma comunidade online que produz e disponibiliza
+  conteúdo técnico sobre segurança em aplicações web.
+  \vfill
+  Em 2017, as 10 vulnerabilidades eleitas de maior risco foram:
+  \vfill
+  \begin{tabu}{lX}
+    \hline
+    Código   & Descrição \\
+    \hline
+    A1:2017  & Injeção de código \\
+    A2:2017  & Quebra de autenticação \\
+    A3:2017  & Exposição de dados sensíveis \\
+    A4:2017  & Entidades externas de XML \\
+    A5:2017  & Quebra de controle de acesso \\
+    A6:2017  & Configuração incorreta de segurança \\
+    A7:2017  & XSS: \emph{Cross-Site Scripting} \\
+    A8:2017  & Deserialização insegura \\
+    A9:2017  & Utilização de componentes
+               com vulnerabilidades conhecidas \\
+    A10:2017 & Log e monitoramento ineficientes \\
+    \hline
+  \end{tabu}
+\end{frame}
+
+
 \begin{frame}{Referências}
-  \fontsize{10pt}{10pt}\selectfont
+  \fontsize{9pt}{9pt}\selectfont
   A maioria do material está disponível apenas em inglês.
   \begin{itemize}
     \item Livro de GPG:
@@ -761,6 +811,12 @@
           \url{https://github.com/danilobellini/certificados-pyse2018}
     \item Repositório da página da Python Sudeste 2018:
           \url{https://github.com/pythonsudeste/pythonsudeste2018-site}
+    \item OWASP:
+    \item \url{https://www.owasp.org/}
+    \item OWASP 2017
+          Top 10 most critical web application security risks:
+          \url{https://github.com/OWASP/Top10/blob/master/2017/%
+               OWASP\%20Top\%2010-2017\%20(en).pdf}
     \item RFC1991 (PGP, obsoleto):
           \url{https://tools.ietf.org/html/rfc1991}
     \item RFC4880 (OpenPGP):
@@ -775,7 +831,7 @@
 
 
 \begin{frame}{Referências}
-  \fontsize{11pt}{11pt}\selectfont
+  \fontsize{9pt}{9pt}\selectfont
   \begin{itemize}
     \item Time to rethink mandatory password changes:
           \url{https://www.ftc.gov/news-events/blogs/techftc/2016/03/%
@@ -794,6 +850,9 @@
           that lets hackers drain bank accounts
           \url{https://www.wired.com/2017/05/%
                fix-ss7-two-factor-authentication-bank-accounts/}
+    \item Simple social engineering trick
+          with a phone call and crying baby:
+          \url{https://www.youtube.com/watch?v=lc7scxvKQOo}
   \end{itemize}
   Todas as imagens utilizadas nos slides sem fonte explícita
   foram obtidas do Wikipedia,
