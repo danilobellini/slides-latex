@@ -33,6 +33,16 @@ ou no LibreOffice Impress (disponíveis no
         Introdução ao Sanic - O Flask Assíncrono
       </a></td>
     </tr>
+    <tr>
+      <td>2018-10-18</td>
+      <td>Semana da informática na ETEC Uirapuru</td>
+      <td><a href="2018-10-18_Security/slides.pdf">
+        Segurança da Informação -
+        Um apanhado geral sobre criptografia,
+        acesso e vulnerabilidades,
+        incluindo exemplos práticos em Python e Shell
+      </a></td>
+    </tr>
   </tbody>
 </table>
 
