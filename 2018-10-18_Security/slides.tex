@@ -174,7 +174,7 @@
 
     \column{.5\textwidth}
     A cifra de César transforma cada caractere da mensagem
-    usando esta tabela:
+    usando uma tabela como esta:
     \vspace{.5em}\vfill
     \resizebox{\textwidth}{!}{%
       \begin{tabular}{c|c|c|c|c|c}
@@ -270,7 +270,7 @@
   \begin{itemize}
     \item
     um algoritmo de chave pública/privada
-    utilizado para troca de chave simétrica
+    utilizado para troca de chave simétrica;
     \item
     um exemplo prático de uso de chave pública/privada
     no OpenPGP\footnote{
@@ -506,8 +506,8 @@
   credenciais de acesso são necessárias:
   \begin{itemize}
     \item Autenticação: identificação de quem está solicitando
-    \item Autorização: verificação o solicitante tem permissão
-                       de realizar determinada solicitação
+    \item Autorização: verificação se o solicitante tem permissão
+                       de realizar o que solicitou
   \end{itemize}
   \vfill
   Senhas ``fortes'' são importantes para, no mínimo,
@@ -698,13 +698,13 @@
   Seu uso é similar ao das senhas,
   mas tradicionalmente categorizados com o verbo ``possuir'',
   em referência ao gerador dos tokens
-  (mesmo que o gerador seja, em essência, apenas uma chave).
+  (mesmo que o gerador possa ser, em essência, apenas uma chave).
   OTPs são \emph{tokens} que só podem ser usados uma vez.
 \end{frame}
 
 
 \begin{frame}{\emph{Fallback}, \emph{bricking},
-              privacidade es disponibilidade no MFA}
+              privacidade e disponibilidade no MFA}
   \fontsize{10pt}{10pt}\selectfont
   \begin{columns}[c]
     \column{.5\textwidth}
@@ -725,12 +725,13 @@
     (e.g. empresa especialista em reconhecimento biométrico).
     \column{.5\textwidth}
     \emph{Bricking} é a impossibilidade de utilizar um sistema
-    devido ao bloqueio ao acesso.
+    devido a um bloqueio não-contornável em algum fator de acesso.
     \vspace{.5em}\vfill
     E se eu esquecer a senha?
     E se meu celular que gera os OTPs quebrar ou for roubado?
-    Essas são possibilidades de \emph{bricking},
-    as alternativas nesses casos costumam ser:
+    Sem um \emph{fallback} para todos os fatores,
+    esses são cenários de \emph{bricking}.
+    Algumas soluções possíveis:
     \begin{itemize}
       \item Solicitação de troca de senha usando o e-mail
       \item OTPs de \emph{fallback} independentes do tempo
@@ -747,7 +748,7 @@
 \begin{frame}{\emph{Malwares} VS engenharia social}
   Nem tudo é vírus/\emph{worm}!
   Nomes para não faltam
-  para naturezas diferentes de software nocivos/maliciosos:
+  para naturezas diferentes de práticas e softwares nocivos/maliciosos:
   \begin{itemize}
     \item \emph{Spyware} / \emph{Adware}
     \item \emph{Phishing}
@@ -756,7 +757,7 @@
   \end{itemize}
   \vfill
   \centering
-  Qual é o alvo de um software desses (ou de algum ``ataque'') \\
+  Qual é o alvo de um software/``ataque'' malicioso \\
   (pessoas, tecnologias, empresas)?
   \vfill
   Qual é a finalidade?
@@ -828,7 +829,7 @@
 \end{frame}
 
 
-\begin{frame}{Autenticação quebrada}
+\begin{frame}{Quebra de autenticação}
   Já falamos bastante sobre senhas fracas e ataques de dicionário!
   \vfill
   Outros exemplos:
@@ -837,7 +838,7 @@
   Recuperação de senha com KBA \\
   (\emph{Knowledge-Based Authentication}): \\
   perguntas sobre o usuário
-  utilizando informações muitas vezes disponível publicamente
+  utilizando informações muitas vezes disponíveis publicamente
   (permite o ataque por terceiros)
   ou incorretas (\emph{bricking} para o próprio usuário).
   \vfill
@@ -845,7 +846,7 @@
   \emph{Rainbow tables}, tabelas com valores pré-computados de hashes,
   podem ser utilizadas para reverter hashes,
   principalmente quando as mensagens são curtas
-  (e.g. hashes de senhas).
+  (e.g. senhas).
 \end{frame}
 
 
