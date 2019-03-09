@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF8" />
+    <script>
+      document.addEventListener("DOMContentLoaded", function(){
+        var ws = new WebSocket(location.href.replace(/^http/, "ws")
+                                            .replace(/\/?$/, "/ws"));
+        var button = document.getElementById("btn");
+        var body = document.getElementsByTagName("body")[0];
+        button.addEventListener("click", function(){
+          ws.send(document.getElementById("txt").value);
+        })
+        ws.onmessage = function(evt){
+          console.log(evt.data);
+          body.insertAdjacentHTML("beforeend", `<div>${evt.data}</div>`);
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <input id="txt">
+    <button id="btn">Send</button>
+  </body>
+</html>
