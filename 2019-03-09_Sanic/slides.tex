@@ -1,0 +1,297 @@
+\documentclass[utf8]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{inconsolata}
+\usepackage{minted}
+\usepackage{tabu}
+\usepackage[absolute,overlay]{textpos}
+
+\definecolor{codebgcolor}{HTML}{FFFFFF}
+\definecolor{coderulecolor}{HTML}{5F7FFF}
+\definecolor{outerbgcolor}{HTML}{F0FFF0}
+
+\setminted{python3, autogobble,
+           breaklines, breakanywhere,
+           breaksymbolindentleft=0pt, breaksymbolindentright=0pt,
+           breaksymbolsepleft=3pt, breaksymbolsepright=3pt,
+           breaksymbolright=...,
+           bgcolor=codebgcolor, style=paraiso-light,
+           fontsize=\fontsize{8pt}{8pt},
+           frame=lines, rulecolor=coderulecolor, framerule=.7pt}
+\setmintedinline{bgcolor={}}
+
+\mode<presentation>
+\usetheme{Warsaw}
+\usecolortheme{seahorse}
+\setbeamercolor{structure}{fg=cyan!90!black}
+\setbeamercolor{background canvas}{bg=outerbgcolor}
+\beamertemplatenavigationsymbolsempty
+
+\setbeamertemplate{footline}{\leavevmode\hbox{%
+  \begin{beamercolorbox}[wd=.35\paperwidth, ht=2.25ex, dp=1ex, center]
+                        {author in head/foot}
+    \usebeamerfont{author in head/foot}
+      Danilo J. S. Bellini \hfill \texttt{@danilobellini}
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.65\paperwidth, ht=2.25ex, dp=1ex, center]
+                        {title in head/foot}
+    \usebeamerfont{title in head/foot}
+      \insertshorttitle~--~\insertshortsubtitle \hfill
+      \insertshortdate \hfill
+      \insertframenumber\,/\,\inserttotalframenumber
+  \end{beamercolorbox}%
+}}
+
+\title{Sanic 18.12 LTS}
+\subtitle{Novos recursos e websockets}
+\author{Danilo J. S. Bellini \\ \texttt{@danilobellini}}
+\date{2019-03-09}
+
+\setlength{\TPHorizModule}{\paperheight}
+\setlength{\TPVertModule}{\paperheight}
+
+
+\begin{document}
+
+
+\begin{frame}
+  \titlepage
+  \center GruPy-ABC @ Fatec Mauá -- SP
+  \begin{textblock}{0}(.9, .4)%
+    \includegraphics[height=110pt]{../2018-08-25_Sanic/sanic.png}%
+  \end{textblock}
+  \begin{textblock}{0}(.05, .6)%
+    \includegraphics[height=30pt]{sanic-framework-logo-400x97.png}%
+  \end{textblock}
+\end{frame}
+
+
+\begin{frame}{Isto é uma continuação!}
+  Estes \emph{slides} são uma continuação
+  do apresentado na Flask Conf 2018 em 2018-08-25,
+  utilizando o Sanic 18.12.0 ao invés do 0.7.0
+  (versão estável que estava no PyPI na época).
+  \vfill
+  Estes slides dizem respeito ao versionamento do projeto,
+  às novidades de sua versão 18.12.0,
+  e aos uso de WebSockets com o framework.
+  Para uma introdução ao Sanic é recomendável
+  ver os já citados slides da Flask Conf.
+  \vfill
+  Todos os \emph{slides} podem ser obtidos em
+  \url{https://github.com/danilobellini/slides-latex}.
+\end{frame}
+
+
+\begin{frame}{Versões do Sanic}
+  \begin{center}
+    \begin{tabu}{cl}
+      2016-05-25 & Primeiro commit (\#60f1004) \\
+      2016-10-01 & 0.0.1 (\#afeed3c) \\
+      2016-10-06 & 0.0.2 (\#74b0cba) \\
+      2016-10-14 & 0.1.0 (\#5a7447e) \\
+      2016-10-16 & 0.1.2 (Primeiro release com \emph{tag})\\
+    \end{tabu}
+    \vfill
+    \begin{columns}[t]
+      \column{.33\textwidth}
+      \begin{tabu}{cl}
+        2016-10-16 & 0.1.3 \\
+        2016-10-18 & 0.1.4 \\
+        2016-10-23 & 0.1.5 \\
+        2016-10-25 & 0.1.6 \\
+        2016-10-25 & 0.1.7 \\
+        2016-11-29 & 0.1.8 \\
+        2016-12-24 & 0.1.9 \\
+        2017-01-14 & 0.2.0 \\
+      \end{tabu}
+      \column{.33\textwidth}
+      \begin{tabu}{cl}
+        2017-01-27 & 0.3.0 \\
+        2017-02-08 & 0.3.1 \\
+        2017-02-25 & 0.4.0 \\
+        2017-02-28 & 0.4.1 \\
+        2017-04-11 & 0.5.0 \\
+        2017-04-14 & 0.5.1 \\
+        2017-04-24 & 0.5.2 \\
+        2017-05-05 & 0.5.3 \\
+      \end{tabu}
+      \column{.33\textwidth}
+      \begin{tabu}{cl}
+        2017-05-08 & 0.5.4 \\
+        2017-08-02 & 0.6.0 \\
+        2017-12-05 & 0.7.0 \\
+        2018-08-17 & 0.8.0 \\
+        2018-09-06 & 0.8.1 \\
+        2018-09-13 & 0.8.2 \\
+        2018-09-13 & 0.8.3 \\
+        2018-12-27 & 18.12.0 \\
+      \end{tabu}
+    \end{columns}
+  \end{center}
+\end{frame}
+
+
+\begin{frame}{Novidades da versão 0.8}
+  O que mudou
+  (além de testes/documentação/\emph{bug fixes}/detalhes)?
+  \begin{itemize}
+    \item Status passou de \emph{Pre-Alpha} para \emph{Beta}
+    \item Auto-reload
+    \item Grupos e aninhamentos de blueprints
+    \item Rotas com UUID
+    \item Novo método \texttt{register\_listener}
+          como alternativa ao decorator
+    \item Diversas melhorias no tratamento de websockets e streaming
+    \item Várias internalidades e melhor cobertura de especificações
+          (sanitização, cabeçalho HTTP, etc.)
+  \end{itemize}
+  \vfill
+  A partir da v0.8.3, o repositório foi movido para o projeto
+  \url{https://github.com/huge-success}.
+\end{frame}
+
+
+\begin{frame}{Novidades da versão 18.12 LTS}
+  O que mudou
+  (além de testes/documentação/\emph{bug fixes}/detalhes)?
+  \begin{itemize}
+    \item Novo sistema de versionamento
+          (calendário ao invés de semântico)
+    \item Cancelamento de tarefa no \texttt{connection\_lost}
+    \item Novo \texttt{stream\_large\_files} no \texttt{Sanic.static}
+    \item Mudanças internas relativas
+          à identificação do IP e porta de requisições,
+          e ao tratamento de erros em arquivos de configuração
+    \item Criação de métodos
+            \texttt{body\_init},
+            \texttt{body\_push} e
+            \texttt{body\_finish}
+          permitindo a customização da classe \texttt{Request}
+    \item Logging ``principal'' em \texttt{sanic.root}
+          ao invés do logger raiz,
+          \texttt{Handler.log} tornou-se obsoleto
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{UUID -- Identificador único universal}
+  As rotas podem ter agora \texttt{uuid} como tipo de dado:
+  \inputminted{python}{uuid_route.py}
+\end{frame}
+
+
+\begin{frame}[fragile]{WebSockets}
+  Veremos agora um exemplo de WebSockets.
+  O próximo exemplo consiste em uma simples sala de bate-papo,
+  em que a primeira mensagem enviada por um usuário é seu nome/apelido,
+  e as mensagens seguintes são os conteúdos.
+  \vfill
+  Uma possível estrutura para uso de websockets é:
+  \begin{minted}{python}
+    @app.websocket("/somewhere")
+    async def websocket_route(request, ws):
+        try: # Conexão aberta!
+            while True:
+                msg = await ws.recv() # Mensagem recebida
+                await ws.send(msg) # Envio de mensagem
+        finally:
+            pass # Conexão encerrada!
+  \end{minted}
+  \vfill
+  O objeto \texttt{ws} representa a conexão,
+  podendo ser utilizado
+  dentro das rotinas de tratamento de outras requisições
+  para realizar uma comunicação iniciada pelo servidor.
+\end{frame}
+
+
+\begin{frame}[fragile]{WebSockets -- \texttt{ws\_server.py}}
+  \inputminted{python}{ws_server.py}
+\end{frame}
+
+
+\begin{frame}[fragile]{WebSockets -- \texttt{ws\_client.html}}
+  \inputminted{html}{ws_client.html}
+\end{frame}
+
+
+\begin{frame}[fragile]{Auto-reload}
+  Para desenvolvimento,
+  é possível aproveitar do recurso de auto-reload,
+  fazendo com que o código seja re-executado caso modificado,
+  sem interromper esse monitoramento
+  mesmo que o código tenha algum erro.
+  Para isso, basta fazer o código do servidor ser um script, com:
+  \begin{minted}{python}
+    from sanic.websocket import WebSocketProtocol
+    # [... Colocar aqui o conteúdo do ws_server.py ...]
+    if __name__ == "__main__":
+        app.run(host="0.0.0.0", port=8000,
+                protocol=WebSocketProtocol,
+                auto_reload=True)
+  \end{minted}
+  \vfill
+  Para iniciar o \texttt{ws\_server.py} diretamente
+  com essa mesma configuração mas sem auto-reload,
+  independente de ter o fragmento acima ou de ser um script:
+  \begin{minted}{raw}
+    python -m sanic --host 0.0.0.0 --port 8000 ws_server.app
+  \end{minted}
+\end{frame}
+
+
+\begin{frame}[fragile]{UNIX Socket}
+  É possível usar o Sanic de outras formas, por exemplo:
+  \vfill
+  \begin{columns}[c]
+    \column{.5\textwidth}
+    \inputminted{python}{unix_socket_sanic.py}
+    \column{.5\textwidth}
+    Esse é um exemplo simples com um contador global.
+    Para verificar o resultado, pode-se usar:
+    \begin{minted}{shell}
+      curl -s --unix-socket /tmp/sanic.sock http://localhost/ | xargs
+    \end{minted}
+    \vfill
+    Embora não seja realmente uma novidade,
+    a documentação do Sanic foi atualizada
+    para explicitar que ele pode ser utilizado nesse tipo de situação.
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}[fragile]{Download via streaming de arquivo estático}
+  Este código serve um arquivo \texttt{sanic.mp4}:
+  \inputminted{python}{stream_video.py}
+  \vfill
+  A rota \texttt{/video\_not\_chunked}
+  pode ser utilizada para enviar
+  o arquivo de vídeo inteiro de uma só vez,
+  em contraste com o picotamento da rota \texttt{/video}.
+  Para verificar o número de "pacotes" TCP enviados,
+  pode-se utilizar:
+  \begin{minted}{shell}
+    sudo tcpdump --interface=any port 8000 and '(tcp-syn|tcp-ack)!=0'
+  \end{minted}
+\end{frame}
+
+
+\begin{frame}{Referências}
+  \begin{itemize}
+    \fontsize{.8em}{0}\selectfont
+    \item \url{https://youtu.be/of9gIoQpPmA}~---
+          Origem do \texttt{sonic.mp4} utilizado no exemplo
+    \item \url{https://github.com/huge-success/sanic}
+    \item \url{https://sanic.readthedocs.io}
+    \item \url{https://sanicframework.org/}
+  \end{itemize}
+  \vfill
+  \begin{center}\fontsize{2cm}{0}\selectfont
+    FIM!
+  \end{center}
+\end{frame}
+
+
+\end{document}
