@@ -43,6 +43,13 @@ ou no LibreOffice Impress (disponíveis no
         incluindo exemplos práticos em Python e Shell
       </a></td>
     </tr>
+    <tr>
+      <td>2019-03-09</td>
+      <td><a href="http://grupyabc.org/grupy-abc/meetups/2019/03/09/grupy-abc-primeiro-encontro-do-ano.html">Encontro do GruPy-ABC na FATEC de Mauá</a></td>
+      <td><a href="2019-03-09_Sanic/slides.pdf">
+        Sanic 18.12 LTS - Novos recursos e websockets
+      </a></td>
+    </tr>
   </tbody>
 </table>
 
