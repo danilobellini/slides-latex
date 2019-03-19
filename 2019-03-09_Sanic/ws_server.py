@@ -1,4 +1,4 @@
-import asyncio
+import html
 from sanic import Sanic
 
 app = Sanic(__name__)
@@ -8,7 +8,7 @@ connections = set()
 async def broadcast(msg):
     print(msg)
     for ws in connections:
-        await ws.send(msg)
+        await ws.send(html.escape(msg))
 
 @app.websocket("/ws")
 async def websocket_route(request, ws):
