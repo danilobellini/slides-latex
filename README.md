@@ -50,6 +50,13 @@ ou no LibreOffice Impress (disponíveis no
         Sanic 18.12 LTS - Novos recursos e websockets
       </a></td>
     </tr>
+    <tr>
+      <td>2019-05-04</td>
+      <td><a href="https://cryptorave.org/">CryptoRave</a></td>
+      <td><a href="2019-05-04_Tomb/slides.pdf">
+        Tomb - Do GPG à esteganografia na prática
+      </a></td>
+    </tr>
   </tbody>
 </table>
 
