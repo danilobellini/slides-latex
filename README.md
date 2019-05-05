@@ -21,7 +21,7 @@ ou no LibreOffice Impress (disponíveis no
   <tbody>
     <tr>
       <td>2018-07-14</td>
-      <td><a href="https://justpython.style">Just Python</a></td>
+      <td><a href="https://www.meetup.com/pt-BR/Grupy-SP/events/252450253/">Just Python</a></td>
       <td><a href="2018-07-14_Just_Python_Numbers/slides.pdf">
         Números no Python!
       </a></td>
