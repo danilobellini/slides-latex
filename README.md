@@ -57,6 +57,13 @@ ou no LibreOffice Impress (disponíveis no
         Tomb - Do GPG à esteganografia na prática
       </a></td>
     </tr>
+    <tr>
+      <td>2019-08-12</td>
+      <td><a href="https://www.facebook.com/SSIUSP/">IX Semana de Sistemas de Informação @ EACH-USP</a></td>
+      <td><a href="2019-08-12_Cryptography/slides.pdf">
+        Introdução à Criptografia - Fundamentos e aplicação prática
+      </a></td>
+    </tr>
   </tbody>
 </table>
 
