@@ -95,7 +95,7 @@
 \newcommand{\challengeTwoKey}[0]{EACH}
 \newcommand{\challengeThree}[0]{WSBKSQBS}
 \newcommand{\challengeThreeKey}[0]{USP}
-\newcommand{\challengeFour}[0]{$p=41$, $g=2$, $a=5$ e $B=32$}
+\newcommand{\challengeFour}[0]{$p=41$, $g=2$, $A=5$ e $b=32$}
 \newcommand{\challengeFive}[0]{1234-527\_}
 
 \begin{document}
@@ -273,7 +273,7 @@
     \resizebox{.8 \textwidth}{!}{%
       \begin{tabular}{rl}
                 Chave: & \texttt{MENTIRA} \\
-        Chave efetiva: & \texttt{ME NTIRA ME NTIRAMEN} \\ \hline
+        Chave efetiva: & \texttt{ME NTIRA EU GOSTODEL} \\ \hline
              Mensagem: & \texttt{EU GOSTO DE LIMONADA} \\
         Texto cifrado: & \texttt{QY THAKO HY RWEHBDHL} \\ \hline \hline
                 Chave: & \texttt{PAGAZAQP} \\
@@ -482,7 +482,7 @@
   \begin{array}{rccccccccl}
     \text{ISSN:} &  0 &  1 &  0 &  3 & - &  6 &  5 &  6 & (4) \\
           \times &  8 &  7 &  6 &  5 &   &  4 &  3 &  2 \\ \hline
-      S = \sum & \{ 0,&  7,&  0,& 15,&   & 24,& 15,& 12 \} & = 73 \\
+          \sum & \{ 0,&  7,&  0,& 15,&   & 24,& 15,& 12 \} & = 73 \\
   \end{array}
   \]
   O resto da divisão por $11$ é $7$, e o complemento é $11 - 7 = 4$,
@@ -571,6 +571,40 @@
       \url{\repo}
     \end{center}
   \end{columns}
+\end{frame}
+
+
+\begin{frame}{Solução dos desafios}
+  \begin{itemize}
+    \item[\checkmark] \emph{Cifra de César}: \texttt{CRIPTOGRAFIA}
+    \item[\checkmark] \emph{Cifra de Vigenère}: \texttt{ARARAQUARA}
+    \item[\checkmark] \emph{Auto-chave}: \texttt{CAMISETA}
+    \item[\checkmark] \emph{Diffie-Hellman}:
+    O segredo é
+    $A^b\;\text{mod}\;p = 5^{32}\;\text{mod}\;41 = 16$, e
+    a chave pública do Bob é
+    $B = g^b\;\text{mod}\;p = 2^{32}\;\text{mod}\;41 = 37$.
+    \item[(Extra)]
+    \emph{Diffie-Hellman} para $p=41$, $g=2$, $a=5$ e $B=32$:
+    O segredo é
+    $B^a\;\text{mod}\;p = 32^5\;\text{mod}\;41 = 32$,
+    e a chave pública da Alice é
+    $A = g^a\;\text{mod}\;p = 2^5\;\text{mod}\;41 = 32$.
+    Coincidentemente,
+    o segredo trocado é igual às duas chaves públicas,
+    tornando esses valores bastante inadequados para uso prático.
+    \item[\checkmark] \emph{Dígito ISSN}:
+    \[
+    \begin{array}{rccccccccl}
+      \text{ISSN:} &  1 &  2 &  3 &  4 & - &  5 &  2 &  7 & (\_) \\
+            \times &  8 &  7 &  6 &  5 &   &  4 &  3 &  2 \\ \hline
+            \sum & \{ 8,& 14,& 18,& 20,&   & 20,&  6,& 14 \} & = 100 \\
+    \end{array}
+    \]
+    Mas $100 = 11 \cdot 9 + 1 = 11 \cdot 10 - 10$.
+    Como o $10$ é representado como \texttt{X},
+    o ISSN resultante é \texttt{1234-527X}.
+  \end{itemize}
 \end{frame}
 
 
