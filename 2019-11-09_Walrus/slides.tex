@@ -1,0 +1,685 @@
+\documentclass[utf8]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{inconsolata}
+\usepackage{minted}
+\usepackage[absolute, overlay]{textpos}
+\usepackage{changepage} % adjustwidth environment
+\usepackage{qrcode}
+\usepackage{enumitem}
+\usepackage{tikz}
+
+
+\definecolor{codebgcolor}{HTML}{FFFFFF}
+\definecolor{coderulecolor}{HTML}{5F7FFF}
+\definecolor{outerbgcolor}{HTML}{F7FFF0}
+
+\definecolor{bgbluish}{HTML}{000033}
+\definecolor{rulegreen}{HTML}{335533}
+\definecolor{outerbgcolor}{HTML}{F7FFF0}
+
+\setminted{python3, autogobble,
+           breaklines, breakanywhere,
+           breaksymbolindentleft=0pt, breaksymbolindentright=0pt,
+           breaksymbolsepleft=3pt, breaksymbolsepright=3pt,
+           breaksymbolright=...,
+           bgcolor=codebgcolor, style=paraiso-light,
+           fontsize=\fontsize{10pt}{10pt},
+           frame=lines, rulecolor=coderulecolor, framerule=.7pt}
+\setmintedinline{bgcolor={}}
+
+\mode<presentation>
+\usetheme{Warsaw}
+\usecolortheme{seahorse}
+\setbeamercolor{background canvas}{bg=outerbgcolor}
+\beamertemplatenavigationsymbolsempty
+
+\setbeamertemplate{footline}{\leavevmode\hbox{%
+  \begin{beamercolorbox}[wd=.29\paperwidth, ht=2.25ex, dp=1ex, center]
+                        {author in head/foot}%
+    \usebeamerfont{author in head/foot}%
+      Danilo J. S. Bellini\hfill\texttt{@danilobellini}%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.38\paperwidth, ht=2.25ex, dp=1ex, center]
+                        {title in head/foot}%
+    \usebeamerfont{title in head/foot}%
+      \insertshorttitle%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.26\paperwidth, ht=2.25ex, dp=1ex, center]
+                        {author in head/foot}%
+    \usebeamerfont{author in head/foot}%
+      Just Python 3.0\hfill%
+      \insertshortdate%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.07\paperwidth, ht=2.25ex, dp=1ex, center]
+                        {title in head/foot}%
+    \usebeamerfont{title in head/foot}%
+      \insertframenumber\,/\,\inserttotalframenumber%
+  \end{beamercolorbox}%
+}}
+
+\title{\emph{Assignment expressions} do zero ao anti-herói}
+\subtitle{O novo ``walrus'' do Python 3.8 -- PEP 572}
+\author{Danilo J. S. Bellini \\ \texttt{@danilobellini}}
+\date{2019-11-09}
+
+\setlength{\TPHorizModule}{\paperwidth}
+\setlength{\TPVertModule}{\paperheight}
+
+\setitemize{label=\usebeamerfont*{itemize item}%
+  \usebeamercolor[fg]{itemize item}%
+  \usebeamertemplate{itemize item}%
+}
+
+\newcommand{\repo}[0]{https://github.com/danilobellini/slides-latex}
+
+
+\begin{document}
+
+
+\begin{frame}
+  \titlepage
+  \center
+  {\huge Just Python 3.0 @ Creditas -- SP}
+
+  \begin{textblock}{0}(.12, .55)%
+    \fontsize{5cm}{5cm}\selectfont :=%
+  \end{textblock}
+  \begin{textblock}{0}(.75, .55)%
+    \fontsize{5cm}{5cm}\selectfont :=%
+  \end{textblock}
+\end{frame}
+
+
+\begin{frame}{\emph{Walrus} --
+              O operador das \emph{assignment expressions} (PEP 572)}
+  \centering
+  Veremos sobre o operador ``\mintinline{python}{:=}'',
+  conhecido como \emph{Walrus} (Morsa)
+  \vfill
+  \includegraphics[width=.6\paperwidth]{Noaa-walrus30.jpg}
+  \vfill
+  \includegraphics[width=.25\paperwidth]{rotwalrus.jpg}
+  \hfill
+  \begin{tikzpicture}
+    \node[anchor=north west, inner sep=0] (walrus)
+      {\includegraphics[width=.25\paperwidth]{rotwalrus.jpg}};
+    \fill[draw=none, fill=outerbgcolor, fill opacity=.4]
+      (walrus.north west) -- (walrus.north east) --
+      (walrus.south east) -- (walrus.south west) --
+      (walrus.north west) -- cycle;
+    \fill[draw=none, fill=black, fill opacity=.4]
+      (.55, -.65) circle (.1)
+      (.55, -1.65) circle (.1);
+    \fill[draw=none, fill=black, fill opacity=.4, rounded corners]
+      (1.3, -1.6) rectangle (3.1, -1.4)
+      (1.3, -.8) rectangle (3.1, -.6);
+  \end{tikzpicture}
+  \hfill
+  \begin{tikzpicture}
+    \node[anchor=north west, inner sep=0] (walrus)
+      {\includegraphics[width=.25\paperwidth]{rotwalrus.jpg}};
+    \fill[draw=none, fill=outerbgcolor, fill opacity=.8]
+      (walrus.north west) -- (walrus.north east) --
+      (walrus.south east) -- (walrus.south west) --
+      (walrus.north west) -- cycle;
+    \fill[draw=none, fill=black, fill opacity=.8]
+      (.55, -.65) circle (.1)
+      (.55, -1.65) circle (.1);
+    \fill[draw=none, fill=black, fill opacity=.8, rounded corners]
+      (1.3, -1.6) rectangle (3.1, -1.4)
+      (1.3, -.8) rectangle (3.1, -.6);
+  \end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}[fragile]{O que faz esse operador?}
+  Esse operador faz com que uma atribuição possa ser realizada
+  em meio a uma expressão,
+  não mais apenas como \emph{statement}.
+  \vfill
+  \begin{minted}{python}
+
+    >>> import re
+    >>> msg = "Just Python 3.0 terá lightnings + 12 palestras!"
+
+    # Vamos encontrar um número de pelo menos 2 dígitos em msg
+    >>> match = re.search(r"\d{2,}", msg)
+    >>> if match:
+    ...     print(match.group())
+    12
+
+    # A tentação: duplicar código...
+    >>> if re.search(r"\d{2,}", msg):
+    ...     print(re.search(r"\d{2,}", msg).group())
+    12
+
+    # Com assignment expression
+    >>> if match := re.search(r"\d{2,}", msg):
+    ...     print(match.group())
+    12
+
+  \end{minted}
+\end{frame}
+
+
+\begin{frame}[fragile]{Evitando atribuições desnecessárias}
+  Supondo que temos \mintinline{python}{p1} e \mintinline{python}{p2}
+  como \emph{regexes}, por exemplo
+  \mintinline{python}{re.compile(r"^Just\s?Python\s?\S+")}
+  e \mintinline{python}{re.compile(r"\S{5,}")}.
+  \vspace{.5em}
+  \vfill
+  \begin{columns}[t]
+    \column{.33\textwidth}
+    \emph{Greedy/eager}
+    \vspace{-1em}
+    \begin{minted}{python}
+      m1 = p1.search(msg)
+      m2 = p2.search(msg)
+      if m1:
+          r = m1.group()
+      elif m2:
+          r = m2.group()
+      else:
+          r = "fallback"
+    \end{minted}
+
+    \column{.39\textwidth}
+    Só o necessário
+    \vspace{-1em}
+    \begin{minted}{python}
+      m1 = p1.search(msg)
+      if m1:
+          r = m1.group()
+      else:
+          m2 = p2.search(msg)
+          if m2:
+              r = m2.group()
+          else:
+              r = "fallback"
+    \end{minted}
+
+    \column{.44\textwidth}
+    Com o \emph{walrus}
+    \vspace{-1em}
+    \begin{minted}{python}
+      if m1 := p1.search(msg):
+          r = m1.group()
+      elif m2 := p2.search(msg):
+          r = m2.group()
+      else:
+          r = "fallback"
+    \end{minted}
+  \end{columns}
+  \vfill
+  Quando queremos fazer várias verificações consecutivas
+  evitando realizar atribuições desnecessariamente,
+  tínhamos que alterar a estrutura do código
+  ou usar algum tipo de quebra, como um \mintinline{python}{return},
+  o que também poderia significar uma mudança na estrutura do código.
+  As \emph{assignment expressions} permitem o mesmo resultado
+  sem gambiarras.
+\end{frame}
+
+
+\begin{frame}[fragile]{Evitando excesso de aninhamentos /
+                       quebra da ``linearidade''}
+  \vspace{-1em}
+  \begin{minted}{python}
+    reductor = dispatch_table.get(cls)
+    if reductor:
+        rv = reductor(x)
+    else:
+        reductor = getattr(x, "__reduce_ex__", None)
+        if reductor:
+            rv = reductor(4)
+        else:
+            reductor = getattr(x, "__reduce__", None)
+            if reductor:
+                rv = reductor()
+            else:
+                raise Error("un(shallow)copyable object")
+
+    # O mesmo (baseado na stdlib "copy"), com o walrus
+    if reductor := dispatch_table.get(cls):
+        rv = reductor(x)
+    elif reductor := getattr(x, "__reduce_ex__", None):
+        rv = reductor(4)
+    elif reductor := getattr(x, "__reduce__", None):
+        rv = reductor()
+    else:
+        raise Error("un(shallow)copyable object")
+  \end{minted}
+\end{frame}
+
+
+\begin{frame}[fragile]{Exemplos de casos de uso}
+  \vspace{-1em}
+  \begin{minted}{python}
+    # Utilização de um match de uma expressão regular
+    if (match := pattern.search(data)) is not None:
+        # Fazer algo com o match
+
+    # Laço que não tem como ser trivialmente escrito de uma vez
+    while chunk := file.read(8192):
+        process(chunk)
+
+    # Reuso de um valor caro de ser computado
+    # (e.g. dentro de um lambda ou de outra expressão)
+    [y := f(x), y**2, y**3]
+
+    # Compartilhamento de subexpressão do filtro da comprehension
+    # (isto será melhor detalhado adiante)
+    filtered_data = [y for x in data if (y := f(x)) is not None]
+  \end{minted}
+  \vfill
+  \vspace{-1em}
+  \begin{columns}
+    \column{.5\textwidth}
+    \begin{minted}{python}
+      # Segundo exemplo sem walrus
+      chunk = file.read(8192):
+      while chunk:
+          process(chunk)
+          chunk = file.read(8192)
+    \end{minted}
+
+    \column{.5\textwidth}
+    \begin{minted}{python}
+      while True:
+          chunk = file.read(8192):
+          if not chunk:
+              break
+          process(chunk)
+    \end{minted}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}[fragile]{Recomendações de ``estilo''}
+  A PEP 572 traz duas ``recomendações de estilo'',
+  situações em que o uso de \emph{statements}
+  é indicado ao invés de \emph{assignment expressions}:
+  \vfill
+  \begin{itemize}
+    \item Quando ``tanto faz''
+    \item Quando houver ambiguidade relativa à ordem de execução
+  \end{itemize}
+  \vfill
+  No apêndice A da PEP 572,
+  há diversos exemplos de código
+  cuja legibilidade foi considerada ``melhor'' ou ``pior''
+  por Tim Peters.
+  Exemplos de situações distintas:
+  \begin{minted}{python}
+    # Confuso! O "total" aparece muitas vezes em um lugar só
+    while total != (total := total + term):
+        term *= mx2 / (i*(i+1))
+        i += 2
+    return total
+
+    # Ok! Mais legível que aninhamentos artificiais em statements
+    if (diff := x - x_base) and (g := gcd(diff, n)) > 1:
+      return g
+  \end{minted}
+\end{frame}
+
+
+\begin{frame}[fragile]{Exemplo final do apêndice A da PEP 572
+                       (adaptado)}
+  Este é um algoritmo para estimar $\lfloor x^n \rfloor$,
+  iniciando por um palpite ``$a$'' maior que o resultado,
+  usando apenas inteiros positivos.
+  \vfill
+  \begin{minted}{python}
+
+    >>> x, n, a = 28, 3, 1000
+    >>> while a > (d := x // a ** (n - 1)):
+    ...     a = ((n - 1) * a + d) // n
+    >>> a
+    3
+
+    >>> a = 1000
+    >>> while True:
+    ...     d = x // a ** (n - 1)
+    ...     if a <= d:
+    ...         break
+    ...     a = ((n - 1) * a + d) // n
+    >>> a
+    3
+
+  \end{minted}
+  \vfill
+  Qual implementação é mais legível?
+\end{frame}
+
+
+\begin{frame}[fragile]{Uso em \emph{list/set/dict comprehensions}
+                       e \emph{generator expressions}}
+  O \emph{walrus} pode aparecer
+  em \emph{quase} qualquer lugar em que uma expressão é permitida,
+  embora ele tenha de estar com parênteses em algumas situações.
+  É importante saber a ordem de execução!
+  \vfill
+  \vspace{-.5em}
+  \begin{minted}{python}
+
+    >>> data = ["  a", "lgumas ", "  ", " strings  ", " ", "aqui"]
+
+    >>> # Ruim! O ".strip()" é calculado duas vezes
+    >>> [value.strip() for value in data if value.strip()]
+    ['a', 'lgumas', 'strings', 'aqui']
+
+    >>> # Muito melhor!
+    >>> [trimmed for value in data if (trimmed := value.strip())]
+    ['a', 'lgumas', 'strings', 'aqui']
+
+    >>> # Em dicionários, a chave é avaliada antes do valor
+    >>> {(t := value.strip()): len(t) for value in data}
+    {'a': 1, 'lgumas': 6, '': 0, 'strings': 7, 'aqui': 4}
+
+  \end{minted}
+  \vfill
+  \vspace{-.5em}
+  No iterável (a parte imediatamente após o \mintinline{python}{in}),
+  é proibido o uso de \emph{assignment expressions}
+  (\texttt{SyntaxError}:
+   \emph{assignment expression cannot be used
+         in a comprehension iterable expression}).
+\end{frame}
+
+
+\begin{frame}[fragile]{\emph{Scan} (função de ordem superior) /
+                       \emph{accumulate}}
+  Esse operador faz com que seja possível implementar
+  uma \emph{comprehension} que acessa o valor da iteração anterior
+  (um ``acumulador''),
+  possibilitando que o \emph{scan} da programação funcional
+  seja implementado por meio de uma \emph{list comprehension}.
+  \vspace{-.5em}
+  \begin{minted}{python}
+
+    >>> # Soma acumulada
+    >>> acc = 0
+    >>> [acc := acc + v for v in [1, 2, 3, 4, -2, 1, 1]]
+    [1, 3, 6, 10, 8, 9, 10]
+    >>> v  # O escopo é somente o interno à list comprehension
+    Traceback (most recent call last):
+      ...
+    NameError: name 'v' is not defined
+
+    >>> acc  # Mas, para o walrus, o menor escopo possível
+    ...      # é o externo à list comprehension
+    10
+
+    >>> # Fibonacci (scan e map em uma só list comprehension)
+    >>> mem = 0, 1
+    >>> [(mem := (mem[1], sum(mem)))[0] for unused in range(14)]
+    [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
+
+  \end{minted}
+\end{frame}
+
+
+\begin{frame}[fragile]{Escopo e casos não inicializados!}
+  \vspace{-1em}
+  \begin{minted}{python}
+
+    # O nome precisa ser definido de antemão para ser utilizável
+    >>> [undef := None if undef else True for unused in range(9)]
+    Traceback (most recent call last):
+      ...
+    NameError: name 'undef' is not defined
+
+    >>> # O escopo padrão é local (o menor)
+    >>> unused = [undef := x for x in range(3) if (tr00 := True)]
+    >>> undef, tr00
+    (2, True)
+
+    >>> # Mas é mantido o escopo original do nome, se for outro
+    >>> def some_func():
+    ...     global new_name  # O mesmo vale para nonlocal
+    ...     [new_name := x for x in range(19) if (other := True)]
+    >>> some_func()
+    >>> new_name
+    18
+    >>> other
+    Traceback (most recent call last):
+      ...
+    NameError: name 'other' is not defined
+
+  \end{minted}
+\end{frame}
+
+
+\begin{frame}[fragile]{Escopo e \texttt{lambda}}
+  Em todos os casos, inclusive do \mintinline{python}{lambda},
+  o \emph{walrus} honra o escopo,
+  e não há nenhuma mudança nas regras de escopo do Python
+  por conta do novo operador.
+  \vfill
+  \begin{minted}{python}
+
+    # O lambda define um escopo próprio!
+    >>> p = r"\d+(.*)"
+    >>> (lambda d: (m := re.match(p, d)) and m.group(1)
+    ... )("123abc")
+    'abc'
+    >>> m
+    Traceback (most recent call last):
+      ...
+    NameError: name 'm' is not defined
+
+  \end{minted}
+  \vfill
+  A \textbf{única} exceção é o caso já visto
+  das \emph{list/set/dict comprehensions}
+  e \emph{generator expressions},
+  as quais o escopo mínimo é o imediatamente externo a elas.
+\end{frame}
+
+
+\begin{frame}[fragile]{Sintaxe -- Onde posso usar?}
+  A atribuição só pode ser feita para um \textbf{nome},
+  e a \emph{assignment expression}
+  também pode ser chamada de \emph{named expression}.
+  \vspace{-.5em}
+  \begin{minted}{python}
+
+    # Cuidado! Para o :=, as vírgulas separam as atribuições!
+    >>> a, b = 7, 0   # Imensa diferença entre o = e o :=
+    >>> [(a, b := b + a, b - a) for unused in range(4)]
+    [(7, 7, 0), (7, 14, 7), (7, 21, 14), (7, 28, 21)]
+
+    >>> [((a, b) := (b + a, b - a)) for unused in range(4)]
+    Traceback (most recent call last):
+      ...
+    SyntaxError: cannot use named assignment with tuple
+
+    # Não pode o nome usado no "for" de uma list comprehension
+    >>> [i := i for i in range(10)]
+    Traceback (most recent call last):
+      ...
+    SyntaxError: assignment expression cannot rebind comprehension iteration variable 'i'
+
+  \end{minted}
+  \vfill
+  \vspace{-.5em}
+  Em muitos casos, é necessário o uso de parênteses,
+  por exemplo quando se quer atribuir uma \mintinline{python}{tuple}
+  a um dado nome.
+\end{frame}
+
+
+\begin{frame}[fragile]{Além das \emph{tuplas}, quando usar parênteses?}
+  \vspace{-1em}
+  \begin{minted}{python}
+    # Quando for uma statement
+    y := f(x)    # INVÁLIDO
+
+    # Quando estiver no mesmo "nível" de outra atribuição
+    y0 = y1 := f(x)             # INVÁLIDO
+    foo(x = y := f(x))          # INVÁLIDO
+    def foo(answer = p := 42):  # INVÁLIDO
+    y = (a := b := c)           # INVÁLIDO
+
+    # No mesmo nível de um ":", como em annotations e lambdas
+    {x := y + 2 : y for y in range(3)}  # INVÁLIDO
+    (lambda: x := 1)                    # INVÁLIDO
+    def foo(answer: p := 42 = 5):       # INVÁLIDO
+    def foo(answer: (p := 42) = 5):     # Válido
+  \end{minted}
+  \vfill
+  Essa lista não é exaustiva,
+  há outros lugares em que é necessário colocar parênteses,
+  como no \mintinline{python}{if} de uma \emph{list comprehension}
+  e dentro de \emph{f-strings}.
+  Em todos esses exemplos, colocar parênteses torna a sintaxe válida.
+\end{frame}
+
+
+\begin{frame}[fragile]{Desafios}
+  \begin{minted}{python}
+    # O que isto faz?
+    if any(len(longline := line) >= 100 for line in lines):
+        print("Extremely long line:", longline)
+
+    # Qual a diferença entre essas duas listas?
+    # Se f = lambda k: max(k ** 2, 1), quais são os resultados?
+    [(lambda y: [y, x / y])(f(x)) for x in range(5)]
+    [[y := f(x), x / y] for x in range(6)]
+
+    # Qual o valor de x em cada um desses casos?
+    x = (x := 2) + 1
+    x = (x := ["just"]) + (x := ["python"])
+    z = (x := ["just"]) + (x := ["python"])
+
+  \end{minted}
+\end{frame}
+
+
+\begin{frame}{Cadê o anti-herói?}
+  O anti-herói \emph{não} é esse novo operador \emph{walrus}
+  e nem mesmo algum potencial uso dele
+  de maneira despreocupada com a legibilidade.
+  O real anti-herói é a \textbf{negatividade}
+  de certas interações sociais!
+  \vfill
+  No dia 2018-07-12,
+  GvR enviou uma mensagem na lista \texttt{python-committers}
+  c/ o título \emph{Transfer of power}, começando com:
+  \vfill
+  \begin{adjustwidth}{2em}{2em}
+    ``\emph{Now that PEP 572 is done,
+    I don't ever want to have to fight so hard for a
+    PEP and find that so many people despise my decisions..
+
+    I would like to remove myself entirely from the decision process.
+    I'll still be there for a while as an ordinary core dev,
+    and I'll still be available to mentor people --
+    possibly more available.
+    But I'm basically giving myself
+    a permanent vacation from being BDFL,
+    and you all will be on your own.}''
+  \end{adjustwidth}
+\end{frame}
+
+\begin{frame}{História (Parte 1/2)}
+  \begin{itemize}
+    \item (2007-05-07) \emph{Issue} 1714448 propõe
+                       \mintinline{python}{if expr as name:}
+    \item (2009-03-14) Discussão é iniciada na \texttt{python-ideas},
+                       criação da PEP 379
+    \item (2009-03-15) ``\emph{a solid -1 from me}'' (GvR),
+    \item (2018-02-27) Definição da PEP 572 por Chris Angelico,
+                       com o título
+                       \emph{Syntax for Statement-Local Name Bindings},
+                       e início de novas discussões
+                       na \texttt{python-ideas}
+                       a partir de uma prova de conceito
+                       que ele próprio criou
+    \item (2018-02-28) Data oficial da efetiva criação da PEP 572
+    \item (2018-03-23)
+    Christoph Groth  propõe o uso do \texttt{:=}como operador; e
+    ``\emph{I also think it's fair to at least reconsider
+            adding inline assignment,
+            with the "traditional" semantics
+            (possibly with mandatory parentheses).
+            This would be easier to learn and understand
+            for people who are familiar with it
+            from other languages (C++, Java, JavaScript).}'' (GvR)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{História (Parte 1/2)}
+  \begin{itemize}
+    \item (2018-04-11) O título da PEP 572 passa a ser
+                       \emph{Assignment Expressions}
+    \item (2018-04-15) ``\emph{I strongly prefer \texttt{:=}
+                               as inline assignment operator} (GvR)
+    \item (2018-05-08) GvR define as regras de escopo
+                       relativas ao uso do novo operador
+                       em \emph{comprehensions}
+    \item (2018-07-11) GvR aprova a PEP 572
+    \item (2018-07-12) GvR abandona o cargo de BDFL
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \begin{columns}[c]
+    \column{.5\textwidth}
+    \begin{center}
+      {\fontsize{5cm}{2.5cm}\selectfont FIM!}
+      \vfill
+      \vspace{1em}
+      \url{\repo}
+      \vfill
+      \vspace{1em}
+      Para rodar os testes dos slides:
+      \mintinline{shell}{python3.8 -m doctest slides.tex}
+      \vfill
+      \vspace{1em}
+    \end{center}
+    \vspace{-1em}
+    Referências:
+    \column{.5\textwidth}
+    \begin{center}
+      \qrcode[height=5cm]{\repo}
+    \end{center}
+  \end{columns}
+  \vfill
+  \fontsize{8pt}{7pt}\selectfont
+  \begin{itemize}[label=--, leftmargin=0mm]
+    \item \url{https://bugs.python.org/issue1714448}
+    \item \url{https://www.python.org/dev/peps/pep-0379/}
+    \item \url{https://www.python.org/dev/peps/pep-0572/}
+    \item \url{https://github.com/python/peps/commits%
+                      /master?path[]=pep-0572.rst}
+    \item \url{https://mail.python.org/pipermail/python-ideas%
+                      /2018-February/049041.html}
+    \item \url{https://mail.python.org/pipermail/python-ideas%
+                      /2009-March/003423.html}
+    \item \url{https://mail.python.org/pipermail/python-ideas%
+                      /2009-March/003439.html}
+    \item \url{https://mail.python.org/pipermail/python-ideas%
+                      /2018-March/049408.html}
+    \item \url{https://mail.python.org/pipermail/python-ideas%
+                      /2018-March/049409.html}
+    \item \url{https://mail.python.org/pipermail/python-ideas%
+                      /2018-April/049758.html}
+    \item \url{https://mail.python.org/pipermail/python-ideas%
+                      /2018-April/049957.html}
+    \item \url{https://mail.python.org/pipermail/python-ideas%
+                      /2018-May/050456.html}
+    \item \url{https://mail.python.org/pipermail/python-dev%
+                      /2018-July/154601.html}
+    \item \url{https://mail.python.org/pipermail/python-committers%
+                      /2018-July/005664.html}
+  \end{itemize}
+\end{frame}
+
+
+\end{document}
