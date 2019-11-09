@@ -64,6 +64,14 @@ ou no LibreOffice Impress (disponíveis no
         Introdução à Criptografia - Fundamentos e aplicação prática
       </a></td>
     </tr>
+    <tr>
+      <td>2019-11-09</td>
+      <td><a href="https://www.meetup.com/pt-BR/Grupy-SP/events/265618918/">Just Python 3.0</a></td>
+      <td><a href="2019-11-09_Walrus/slides.pdf">
+        Assignment expressions do zero ao anti-herói:
+        O novo "walrus" do Python 3.8 – PEP 572
+      </a></td>
+    </tr>
   </tbody>
 </table>
 
