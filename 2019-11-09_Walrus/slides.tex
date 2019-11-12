@@ -259,7 +259,7 @@
   \vspace{-1em}
   \begin{minted}{python}
     # Utilização de um match de uma expressão regular
-    if (match := pattern.search(data)) is not None:
+    if (match := re.search(pattern, data)) is not None:
         # Fazer algo com o match
 
     # Laço que não tem como ser trivialmente escrito de uma vez
@@ -322,26 +322,27 @@
 
     # Ok! Mais legível que aninhamentos artificiais em statements
     if (diff := x - x_base) and (g := gcd(diff, n)) > 1:
-      return g
+        return g
   \end{minted}
 \end{frame}
 
 
 \begin{frame}[fragile]{Exemplo final do apêndice A da PEP 572
                        (adaptado)}
-  Este é um algoritmo para estimar $\lfloor x^n \rfloor$,
-  iniciando por um palpite ``$a$'' maior que o resultado,
+  Este é um algoritmo para calcular $\lfloor \sqrt[n]{x} \rfloor$,
+  em que os valores de $x$ e $n$ são conhecidos (e inteiros positivos),
+  iniciando com um palpite maior ou igual ao resultado,
   usando apenas inteiros positivos.
   \vfill
   \begin{minted}{python}
 
-    >>> x, n, a = 28, 3, 1000
-    >>> while a > (d := x // a ** (n - 1)):
-    ...     a = ((n - 1) * a + d) // n
+    >>> x, n, a = 28, 3, 1000  # Com walrus
+    >>> while a > (d := x // a ** (n - 1)):  # while too big:
+    ...     a = ((n - 1) * a + d) // n       #     a = new guess
     >>> a
     3
 
-    >>> a = 1000
+    >>> x, n, a = 28, 3, 1000  # Sem walrus
     >>> while True:
     ...     d = x // a ** (n - 1)
     ...     if a <= d:
