@@ -72,6 +72,13 @@ ou no LibreOffice Impress (disponíveis no
         O novo "walrus" do Python 3.8 – PEP 572
       </a></td>
     </tr>
+    <tr>
+      <td>2024-07-06</td>
+      <td><a href="https://sudeste.python.org.br/">Python Sudeste</a></td>
+      <td><a href="2024-07-06_DuckDB/slides.pdf">
+        DuckDB: Uma revolução pra quem trabalha com dados
+      </a></td>
+    </tr>
   </tbody>
 </table>
 
