@@ -79,6 +79,13 @@ ou no LibreOffice Impress (disponíveis no
         DuckDB: Uma revolução pra quem trabalha com dados
       </a></td>
     </tr>
+    <tr>
+      <td>2024-07-07</td>
+      <td><a href="https://sudeste.python.org.br/">Python Sudeste</a></td>
+      <td><a href="2024-07-07_AST/slides.pdf">
+        AST: O que é e como usar o módulo padrão?
+      </a></td>
+    </tr>
   </tbody>
 </table>
 
