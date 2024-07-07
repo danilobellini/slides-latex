@@ -1,0 +1,6 @@
+$ python -m ast -m "func_type" <<< '(int, complex) -> str'
+FunctionType(
+   argtypes=[
+      Name(id='int', ctx=Load()),
+      Name(id='complex', ctx=Load())],
+   returns=Name(id='str', ctx=Load()))

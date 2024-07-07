@@ -1,0 +1,6 @@
+$ python -m ast -m eval <<< '2 + 2'
+Expression(
+   body=BinOp(
+      left=Constant(value=2),
+      op=Add(),
+      right=Constant(value=2)))

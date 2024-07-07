@@ -1,0 +1,378 @@
+\documentclass[utf8]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{sourcecodepro}
+\usepackage{minted}
+\usepackage[absolute, overlay]{textpos}
+\usepackage{changepage} % adjustwidth environment
+\usepackage{qrcode}
+\usepackage{enumitem}
+\usepackage{tikz}
+
+
+\usetikzlibrary{graphs, quotes}
+
+\definecolor{codebgcolor}{HTML}{FFFFFF}
+\definecolor{coderulecolor}{HTML}{5F7FFF}
+\definecolor{outerbgcolor}{HTML}{FFFFEE}
+
+\setminted{python3, autogobble,
+           breaklines, breakanywhere,
+           breaksymbolindentleft=0pt, breaksymbolindentright=0pt,
+           breaksymbolsepleft=3pt, breaksymbolsepright=3pt,
+           breaksymbolright=...,
+           bgcolor=codebgcolor, style=borland,
+           fontsize=\fontsize{8pt}{8pt},
+           frame=lines, rulecolor=coderulecolor, framerule=.7pt}
+\setmintedinline{bgcolor={}}
+
+\mode<presentation>
+\usetheme{Warsaw}
+\usecolortheme{wolverine}
+\setbeamercolor{background canvas}{bg=outerbgcolor}
+\setbeamercolor{author in head/foot}{bg=black, fg=lightgray}
+\beamertemplatenavigationsymbolsempty
+
+\setbeamertemplate{footline}{\leavevmode\hbox{%
+  \begin{beamercolorbox}[wd=.31\paperwidth, ht=2.25ex, dp=1ex, center]
+                        {author in head/foot}%
+    \usebeamerfont{author in head/foot}%
+      Danilo J. S. Bellini\hfill\texttt{@danilobellini}%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.38\paperwidth, ht=2.25ex, dp=1ex, center]
+                        {title in head/foot}%
+    \usebeamerfont{title in head/foot}%
+      \insertshorttitle: \insertshortsubtitle%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.24\paperwidth, ht=2.25ex, dp=1ex, center]
+                        {author in head/foot}%
+    \usebeamerfont{author in head/foot}%
+      Python Sudeste\hfill%
+      \insertshortdate%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.07\paperwidth, ht=2.25ex, dp=1ex, center]
+                        {title in head/foot}%
+    \usebeamerfont{title in head/foot}%
+      \insertframenumber\,/\,\inserttotalframenumber%
+  \end{beamercolorbox}%
+}}
+
+\setbeamertemplate{background}{%
+  \tikz[overlay,remember picture]%
+    \node[opacity=0.05] at (current page.center){%
+      \includesvg{.5\paperwidth}{pyse_tags}%
+    };%
+}
+
+\title{AST}
+\subtitle{O que é e como usar o módulo padrão?}
+\author{Danilo J. S. Bellini \\ \texttt{@danilobellini}}
+\date{2024-07-07}
+
+\setlength{\TPHorizModule}{\paperwidth}
+\setlength{\TPVertModule}{\paperheight}
+
+\setitemize{label=\usebeamerfont*{itemize item}%
+  \usebeamercolor[fg]{itemize item}%
+  \usebeamertemplate{itemize item}%
+}
+
+\newcommand{\includesvg}[2]{%
+  \ifnum\pdfstrcmp{\pdffilemoddate{#2.svg}}%
+                  {\pdffilemoddate{#2.pdf}}>0%
+    {\immediate\write18%
+     {inkscape -z -D --file=#2.svg --export-pdf=#2.pdf --export-latex}%
+    }%
+  \fi%
+  \centering%
+  \resizebox{#1}{!}{%
+    \input{#2.pdf_tex}%
+  }%
+}
+
+\newcommand{\repo}[0]{https://github.com/danilobellini/slides-latex}
+
+
+\begin{document}
+
+
+\begin{frame}
+  \titlepage
+  \center
+  {\huge Python Sudeste 2024 @ UFSCar/SP}
+
+  \begin{textblock}{0}(.12, .55)%
+    \includesvg{.18\paperwidth}{logo_pyse}%
+  \end{textblock}
+  \begin{textblock}{0}(.67, .5)%
+    \tikz\node {Abstract}
+      child {node {Syntax}}
+      child {node {Tree}};%
+  \end{textblock}
+\end{frame}
+
+
+\begin{frame}{O que acontece com o código Python até a execução?}
+  Podemos dividir a conversão do código fonte em 4 passos:
+  \begin{itemize}
+    \item[1.] Código fonte (uma \emph{string})
+    \item[2.]
+      Sequência de \emph{tokens} resultantes do analisador léxico
+      (\texttt{INDENT}/\texttt{DEDENT}, identificadores, literais,
+       operadores, \texttt{NEWLINE}, [soft] keywords, e delimitadores)
+    \item[3.] \textbf{Árvore sintática} resultante do parser
+    \item[4.] \emph{Bytecode} Python compilado (insumo do interpretador)
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Por que chamamos de ``abstrata''?}
+  Uma árvore sintática é dita ``abstrata''
+  quando ela ``descarta'' alguma informação
+  mesmo quando esta faz parte da gramática da linguagem,
+  mas que não é relevante de ser armazenada por:
+  \begin{itemize}
+    \item Ser implícita na estrutura da própria árvore; ou
+    \item
+      Não possuir valor semântico a ser interpretado, isto é,
+      não ter relevância na tradução realizada
+      no processo de compilação.
+  \end{itemize}
+  \vfill
+  Por exemplo, parênteses opcionais, comentários, linhas em branco e
+  ``\texttt{;}'' separando \emph{statements}
+  não trazem nenhum valor para o \emph{bytecode} resultante.
+  O ``\texttt{:}'' que denota o início de um novo bloco
+  está sempre implícito como parte da sintaxe dos respectivos blocos,
+  não é preciso que esse detalhe de sintaxe tenha um ``nó'' próprio
+  para representá-lo.
+\end{frame}
+
+
+\begin{frame}[fragile]{Um \emph{Hello world} com AST!}
+  \vspace{-.8em}%
+  \begin{minted}{pycon}
+    >>> import ast
+    >>> código = "print('Python Sudeste em São Carlos!')"
+
+    # ast.parse -> Cria o objeto AST a partir do código
+    >>> root = ast.parse(código)  # mode="exec" implícito
+    >>> type(root)
+    <class 'ast.Module'>
+
+    # ast.dump -> Permite "enxergar" a AST
+    >>> print(ast.dump(root, indent=2))
+    Module(
+      body=[
+        Expr(
+          value=Call(
+            func=Name(id='print', ctx=Load()),
+            args=[
+              Constant(value='Python Sudeste em São Carlos!')],
+            keywords=[]))],
+      type_ignores=[])
+
+    # compile -> Pode ser usado para converter AST em bytecode
+    >>> code_obj = compile(root, filename="<string>", mode="exec")
+    >>> type(code_obj)  # Este tipo é o types.CodeType
+    <class 'code'>
+
+    # exec/eval -> Permitem rodar o bytecode
+    >>> exec(code_obj)
+    Python Sudeste em São Carlos!
+  \end{minted}
+\end{frame}
+
+
+\begin{frame}[fragile]{``Raiz'' da AST gerada: os 4 modos}
+  A gramática abstrata do Python
+  define para o elemento raiz \texttt{mod}:
+  \vspace{-.8em}%
+  \begin{minted}{text}
+    mod = Module(stmt* body, type_ignore* type_ignores)
+        | Interactive(stmt* body)
+        | Expression(expr body)
+        | FunctionType(expr* argtypes, expr returns)
+  \end{minted}
+  \vfill
+  \begin{tabular}{rcl}
+    \texttt{mode}
+      & Tipo devolvido por \mintinline{python}{ast.parse}
+      & Conteúdo do \texttt{body} \\ \hline
+    \mintinline{python}{"exec"}
+      & \mintinline{python}{ast.Module}
+      & Lista de nós (\emph{statements}) \\
+    \mintinline{python}{"single"}
+      & \mintinline{python}{ast.Interactive}
+      & Lista de nós (uma linha) \\
+    \mintinline{python}{"eval"}
+      & \mintinline{python}{ast.Expression}
+      & Um único nó (expressão) \\
+    \mintinline{python}{"func_type"}
+      & \mintinline{python}{ast.FunctionType}
+      & Não há (legado)
+  \end{tabular}
+  \vspace{.5em}\vfill
+  Podemos ver o resultado de \mintinline{python}{ast.dump}
+  com \mintinline{bash}{python -m ast}:
+  \vspace{-.8em}%
+  \inputminted{console}{eval_console.txt}
+\end{frame}
+
+
+\begin{frame}{Expressões VS \emph{statements};
+              \mintinline{python}{ast.Expression} VS
+              \mintinline{python}{ast.Expr}}
+  Os nós da AST são objetos que herdam de \mintinline{python}{ast.AST}.
+  \vfill
+  Uma expressão é algo que em Python produz um valor resultante, mesmo
+  que este seja \mintinline{python}{None}.
+  (\texttt{expr} na gramática).
+  \vfill
+  Um \emph{statement} (\texttt{stmt} na gramática)
+  é uma operação ``atômica'' no código,
+  tal como uma definição de função ou uma atribuição.
+  Todo código Python consiste em \emph{statements}.
+  \vfill
+  O nó de tipo \mintinline{python}{ast.Expression} serve apenas
+  como raiz do modo \texttt{eval},
+  as expressões são na realidade os valores que podem constar
+  em seu campo \texttt{body}.
+  \vfill
+  Uma expressão pode ser usada como um \emph{statement},
+  por exemplo em uma chamada de função.
+  O \mintinline{python}{ast.Expr} serve para esse fim,
+  contendo em seu campo \texttt{value} a expressão propriamente dita,
+  convertendo-a em \texttt{statement}, para a finalidade sintática.
+\end{frame}
+
+
+\begin{frame}[fragile]{O modo \texttt{single}
+                       e o legado \texttt{func\_type}}
+  O modo \texttt{single}
+  unifica o ``EP'' do REPL (\emph{read-eval-print-loop}),
+  fazendo chamadas ao \mintinline{python}{sys.displayhook}
+  para os nós \mintinline{python}{ast.Expr}
+  que constarem no \texttt{body}.
+  Isto é, os resultados das ``expressões como \emph{statements}''
+  são exibidos como se tudo fosse digitado no terminal do Python
+  em uma única linha lógica
+  (um ou mais \emph{statements} separados por ``\texttt{;}'').
+  \vfill
+  O modo \texttt{func\_type} é um legado (Python < 3.5)
+  contendo anotações de tipo para funções
+  presentes em comentários como
+
+  \mintinline{python}{# type: (int, complex) -> str}.
+  \vspace{-.8em}%
+  \inputminted{console}{func_type_console.txt}
+\end{frame}
+
+
+\begin{frame}[fragile]{O \emph{built-in} \mintinline{python}{compile}}
+  Embora exibido anteriormente para compilar AST para \emph{bytecode},
+  esse built-in tradicionalmente recebe como entrada
+  código Python como uma \emph{string}.
+  Em particular, seu quarto argumento posicional, \texttt{flags}
+  pode ser atribuído a \mintinline{python}{ast.PyCF_ONLY_AST},
+  nesse caso o comportamento do \mintinline{python}{compile}
+  será o mesmo do \mintinline{python}{ast.parse}
+  (converter código fonte Python em AST).
+  \vfill
+  Quando usado para compilar AST para \emph{bytecode}
+  O modo fornecido para o \mintinline{python}{compile}
+  deve ser o mesmo usado para criar a AST,
+  do contrário teremos um \mintinline{python}{TypeError}.
+\end{frame}
+
+
+\begin{frame}[fragile]{Casos de uso para AST}
+  \begin{itemize}
+    \item Avaliação de características de um código (análise estática)
+          e.g. com \mintinline{python}{ast.NodeVisitor}
+               ou \mintinline{python}{ast.walk}
+      \begin{itemize}
+        \item Garantia de segurança/isolamento
+              (\mintinline{python}{ast.literal_eval})
+        \item Teste de arquitetura
+        \item Garantia de equivalência entre códigos (\emph{formatter})
+        \item Cálculo de complexidade ciclomática (McCabe)
+      \end{itemize}
+    \item Transformação de um código
+          (e.g. via \mintinline{python}{ast.NodeTransformer})
+      \begin{itemize}
+        \item
+          Remoção de \emph{statements} de um bloco
+          (e.g. \mintinline{python}{assert})
+        \item
+          Coleta de um fragmento de um arquivo,
+          (e.g. para o \texttt{setup.py} obter
+                o \mintinline{python}{__version__}
+                sem importar o módulo/pacote)
+        \item Substituição de um fragmento de uma expressão
+        \item Inserção de \emph{statements} artificiais
+        \item Macro sintática
+      \end{itemize}
+    \item Geração de código em tempo de execução (AST sintética)
+      \begin{itemize}
+        \item Metaprogramação
+        \item Otimização
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Exemplo de síntese: DynagRPC v0.1!}
+  Biblioteca criada
+  para tornar a implementação de servidores gRPC "menos não-pythonico".
+  Código criado para um cliente,
+  aberto com autorização para a realização da presente palestra.
+  \vfill
+  A classe \texttt{GrpcTypeCastRegistry} implementa um registro
+  de conversores entre objetos \emph{protobuf}
+  e objetos de tipos nativos do Python (principalmente dicionários)
+  utilizando síntese de AST.
+  \vfill
+  \url{https://github.com/danilobellini/dynagrpc}
+  \vfill
+  Na síntese, a ``posição no código''
+  (\texttt{lineno} e \texttt{col\_offset})
+  precisa ser preenchida nos nós da AST,
+  e há funções como \mintinline{python}{ast.copy_location}
+  e \mintinline{python}{ast.increment_lineno}
+  feitas para esse fim.
+  Esse problema foi resolvido da maneira mais simples,
+  com o \mintinline{python}{ast.fix_missing_locations},
+  que atribui recursivamente os nós com o mesmo valor do \emph{parent}
+  (antecessor imediato, nó ``pai'').
+\end{frame}
+
+
+\begin{frame}
+  \begin{columns}[c]
+    \column{.5\textwidth}
+    \begin{center}
+      {\fontsize{5cm}{2.5cm}\selectfont FIM!}
+      \vfill
+      \vspace{1em}
+      \url{\repo}
+    \end{center}
+    \vspace{3em}
+    Referências:
+    \column{.5\textwidth}
+    \begin{center}
+      \qrcode[height=5cm]{\repo}
+    \end{center}
+  \end{columns}
+  \vfill
+  \fontsize{8pt}{7pt}\selectfont
+  \begin{itemize}[label=--, leftmargin=0mm]
+    \item \url{https://docs.python.org/3/library/ast.html}
+    \item \url{https://github.com/danilobellini/dynagrpc}
+    \item \url{https://greentreesnakes.readthedocs.io}
+  \end{itemize}
+\end{frame}
+
+
+\end{document}
