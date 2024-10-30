@@ -1,0 +1,452 @@
+\documentclass[utf8]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{sourcecodepro}
+\usepackage{minted}
+\usepackage[absolute, overlay]{textpos}
+\usepackage{changepage} % adjustwidth environment
+\usepackage{qrcode}
+\usepackage{enumitem}
+\usepackage{tikz}
+
+
+\usetikzlibrary{calc, positioning, arrows, arrows.meta}
+
+\definecolor{codebgcolor}{HTML}{FFFFFF}
+\definecolor{coderulecolor}{HTML}{5F7FFF}
+\definecolor{outerbgcolor}{HTML}{FFFFEE}
+
+\setminted{python3, autogobble,
+           breaklines, breakanywhere,
+           breaksymbolindentleft=0pt, breaksymbolindentright=0pt,
+           breaksymbolsepleft=3pt, breaksymbolsepright=3pt,
+           breaksymbolright=...,
+           bgcolor=codebgcolor, style=borland,
+           fontsize=\fontsize{8pt}{8pt},
+           frame=lines, rulecolor=coderulecolor, framerule=.7pt}
+\setmintedinline{bgcolor={}}
+
+\mode<presentation>
+\usetheme{Warsaw}
+\usecolortheme{seahorse}
+\setbeamercolor{background canvas}{bg=outerbgcolor}
+\beamertemplatenavigationsymbolsempty
+
+\setbeamertemplate{footline}{\leavevmode\hbox{%
+  \begin{beamercolorbox}[wd=.34\paperwidth, ht=2.25ex, dp=1ex, center]
+                        {author in head/foot}%
+    \usebeamerfont{author in head/foot}%
+      Danilo J. S. Bellini\hfill\texttt{@danilobellini}%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.24\paperwidth, ht=2.25ex, dp=1ex, center]
+                        {title in head/foot}%
+    \usebeamerfont{title in head/foot}%
+      \insertshorttitle%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.35\paperwidth, ht=2.25ex, dp=1ex, center]
+                        {author in head/foot}%
+    \usebeamerfont{author in head/foot}%
+      SECOMP 2024 @ UFSCar
+      \raisebox{-0.6ex}{\includesvg{1em}{logo_2024}}
+      \insertshortdate%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.07\paperwidth, ht=2.25ex, dp=1ex, center]
+                        {title in head/foot}%
+    \usebeamerfont{title in head/foot}%
+      \insertframenumber\,/\,\inserttotalframenumber%
+  \end{beamercolorbox}%
+}}
+
+\setbeamertemplate{background}{%
+  \tikz[overlay,remember picture]%
+    \node[opacity=0.05, above=-.4cm, anchor=center]
+      at (current page.center){%
+      \includesvg{.6\paperwidth}{logo_2024_recolored}%
+    };%
+}
+
+\title{Controle de versão com git}
+\subtitle{Minicurso}
+\author{Danilo J. S. Bellini \\ \texttt{@danilobellini}}
+\date{2024-10-29}
+
+\setlength{\TPHorizModule}{\paperwidth}
+\setlength{\TPVertModule}{\paperheight}
+
+\setitemize{label=\usebeamerfont*{itemize item}%
+  \usebeamercolor[fg]{itemize item}%
+  \usebeamertemplate{itemize item}%
+}
+
+\newcommand{\includesvg}[2]{%
+  \ifnum\pdfstrcmp{\pdffilemoddate{#2.svg}}%
+                  {\pdffilemoddate{#2.pdf}}>0%
+    {\immediate\write18%
+     {inkscape -z -D --file=#2.svg --export-pdf=#2.pdf --export-latex}%
+    }%
+  \fi%
+  \centering%
+  \resizebox{#1}{!}{%
+    \input{#2.pdf_tex}%
+  }%
+}
+
+\newcommand{\repo}[0]{https://github.com/danilobellini/slides-latex}
+
+
+\begin{document}
+
+
+\begin{frame}
+  \titlepage
+  \center
+  {\huge SECOMP 2024 @ UFSCar/SP}
+
+  \begin{textblock}{0}(.12, .42)%
+    \includesvg{.25\paperwidth}{git_logo}%
+  \end{textblock}
+  \begin{textblock}{0}(.67, .55)%
+    \includesvg{.18\paperwidth}{Git-logo-2007}
+  \end{textblock}
+\end{frame}
+
+
+\begin{frame}{Breve história dos sistemas de controle de versão
+              e surgimento do \texttt{git}}
+  Sistemas de controle de versão:
+  \begin{itemize}
+    \item CVS (\textit{Concurrent Versions System}), 1986-2008 GPLv1+
+    \item BitKeeper 2000-2018, Apache desde 2016-05-09
+    \item Subversion (\texttt{svn}), desde 2000-10-20, Apache
+    \item Mercurial (\texttt{hg}), desde 2005-04-19, GPLv2+
+    \item Git, desde 2005-04-07, GPLv2-only
+  \end{itemize}
+  Linux (kernel):
+  \begin{itemize}
+    \item
+      Um diretório por release até 2002, não havia controle de versão
+    \item
+      Usou o BitKeeper (nonfree) desde 2002,
+      gratuito como ``incentivo ao software livre''
+    \item
+      Em 2005, Andrew Tridgell usou engenharia reversa (rede)
+      para criar uma alternativa open source ao BitKeeper,
+      então Larry McVoy retirou o ``incentivo''
+    \item
+      Linus Torvalds interrompe o desenvolvimento do Linux
+      e inicia o planejamento e o desenvolvimento do git
+    \item
+      ``Thank You, Larry McVoy'' por Richard Stallman
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Por que o nome ``\texttt{git}''?}
+  \begin{adjustwidth}{2em}{1em}\emph{\Large
+    ``Sou egoísta, e dou nomes relativos a mim
+      em todos os meus projetos.'' (Linus Torvalds)
+  }\end{adjustwidth}%
+  \vfill%
+  A palavra \texttt{git} é uma gíria britânica pejorativa.
+  O \texttt{README} do projeto diz que o significado
+  depende de seu humor:
+  \begin{itemize}
+    \item
+      Arranjo aleatório pronunciável de 3 letras
+      que não é utilizado por nenhum comando UNIX comum.
+      O fato de poder ser um ``get'' pronunciado erroneamente
+      pode ou não ser relevante.
+    \item
+      Estúpido. Contemptível e desprezível. Simples.
+      Escolha com base em seu dicionário de gírias.
+    \item
+      ``\emph{Global information tracker}'':
+      Você está de bom humor, e ele funciona para você.
+      Anjos cantam e a luz subitamente preenche a sala.
+    \item
+      ``\emph{Goddamn idiotic truckload of sh*t}'': quando ele quebra.
+  \end{itemize}
+  \vfill%
+  \textbf{Curiosidade}:
+  Como o git é descrito em sua \emph{man page} (\texttt{man git})?
+\end{frame}
+
+\begin{frame}{Tipos de sistemas de controle de versão}
+  \begin{columns}[c]
+    \column{.3\textwidth}\centering
+    \textbf{Local}\\(e.g. GNU RCS)\vspace{1em}
+    \begin{tikzpicture}[>=Latex]
+      \node[draw, rounded corners=.5ex] (a) at (0, 0) {Versão 1};
+      \node[draw, rounded corners=.5ex] (b) at (0, -1) {Versão 2};
+      \node[draw, rounded corners=.5ex] (c) at (0, -2) {Versão 3};
+      \draw[->] (a) -- (b);
+      \draw[->] (b) -- (c);
+    \end{tikzpicture}
+    \vfill\vspace{1em}
+    Banco de dados de arquivos (NoSQL)
+    agrupados por versão, sem comunicação remota
+    \column{.35\textwidth}\centering
+    \textbf{Centralizado}\\(e.g. CVS, SVN)\vspace{1em}
+    \tikz\node {Servidor central}
+      child {node {A}}
+      child {node {B}}
+      child {node {C}};%
+    \vfill\vspace{1em}
+    Um único servidor é a \emph{source of truth},
+    os demais nós não possuem toda informação;
+    risco de ponto único de falha
+    e interrupção de trabalho por falhas na rede
+    \column{.35\textwidth}\centering
+    \textbf{Distribuído}\\(e.g. \texttt{git}, \texttt{hg})\vspace{1em}
+    \vfill
+    \begin{tikzpicture}[>=stealth]
+      \draw (-.5, -1.5) rectangle (.5, .5);
+      \node[draw, rounded corners=.5ex] (v1) at (0, 0) {};
+      \node[draw, rounded corners=.5ex] (v2) at (0, -.5) {};
+      \node[draw, rounded corners=.5ex] (v3) at (0, -1) {};
+      \draw[->] (v1) -- (v2);
+      \draw[->] (v2) -- (v3);
+
+      \draw (1, -1.5) rectangle (2, .5);
+      \node[draw, rounded corners=.5ex] (w1) at (1.5, 0) {};
+      \node[draw, rounded corners=.5ex] (w2) at (1.5, -.5) {};
+      \node[draw, rounded corners=.5ex] (w3) at (1.5, -1) {};
+      \draw[->] (w1) -- (w2);
+      \draw[->] (w2) -- (w3);
+
+      \draw (.25, 1) rectangle (1.25, 3);
+      \node[draw, rounded corners=.5ex] (w1) at (.75, 2.5) {};
+      \node[draw, rounded corners=.5ex] (w2) at (.75, 2) {};
+      \node[draw, rounded corners=.5ex] (w3) at (.75, 1.5) {};
+      \draw[->] (w1) -- (w2);
+      \draw[->] (w2) -- (w3);
+
+      \draw[<->, dashed, thick, inner sep=1ex] (0, .5) -- (.5, 1);
+      \draw[<->, dashed, thick, inner sep=1ex] (1.5, .5) -- (1, 1);
+      \draw[<->, dashed, thick, inner sep=1ex] (.5, -1) -- (1, -1);
+
+    \end{tikzpicture}
+    \vfill\vspace{1em}
+    Toda informação está (ou pode estar) disponível em todos os nós.
+  \end{columns}
+\end{frame}
+
+\begin{frame}{\emph{Snapshot} VS \emph{delta patching}}
+  Uma das escolhas mais relevantes do \emph{design} do \texttt{git}
+  é o fato de que todos os arquivos são armazenados integralmente
+  (\emph{snapshot}).
+  Ou seja, \textbf{todos os arquivos} em todas as suas versões
+  \textbf{são armazenados por completo},
+  e as ``\textbf{mudanças aplicadas}''
+  \textbf{são} na realidade \textbf{computadas} sob demanda.
+  \vfill%
+  \begin{tabular}{cccccc}
+      & Commit1 & Commit2 & Commit3 & Commit4 & Commit5 \\
+    \texttt{README}
+      & R1
+      & \textcolor{gray}{...R1...}
+      & \textcolor{gray}{...R1...}
+      & \textcolor{gray}{...R1...}
+      & R2
+      \\
+    \texttt{a.py}
+      & \textcolor{lightgray}{N/A}
+      & m1
+      & m2
+      & \textcolor{gray}{...m2...}
+      & m3
+      \\
+    \texttt{b.py}
+      & \textcolor{lightgray}{N/A}
+      & \textcolor{lightgray}{N/A}
+      & \textcolor{lightgray}{N/A}
+      & p1
+      & \textcolor{gray}{...p1...}
+      \\
+  \end{tabular}
+  \vfill%
+  Isso permite que todo arquivo seja acessado diretamente,
+  sem a necessidade de ``reconstruir'' cada arquivo
+  a partir de suas mudanças individuais
+  (contraste com CVS e \texttt{darcs}).
+\end{frame}
+
+\begin{frame}{Commits no \texttt{git}}
+  Podemos interpretar o \texttt{git} como um banco de dados NoSQL
+  de ``\emph{snapshots}'' imutáveis, as versões ou \emph{commits}.
+  \emph{Commits}:
+  \begin{itemize}
+    \item
+      Possuem um \emph{hash} determinístico (\emph{git} utiliza SHA-1)
+    \item
+      Consistem em um conjunto de arquivos
+      (conteúdo, \emph{path} e \emph{bit} de execução),
+      além de metadados: mensagem (título e descrição),
+      autor, \emph{timestamp} de autoria,
+      \emph{committer}, \emph{timestamp} do \emph{commit},
+      lista ordenada de \emph{parents} (ancestrais imediatos)
+      referenciados pelos seus \emph{hashes}
+    \item
+      São referenciáveis, por exemplo através de seu \emph{hash}
+      ou seus primeiros 7 ou mais \emph{nibbles} (dígitos hexadecimais)
+    \item
+      Formam um DAG (grafo direcional acíclico)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{\emph{Show me the co... commmand lines}}
+  \vspace{-.8em}%
+  \inputminted{bash}{01_init.sh}
+  Para o primeiro uso, é necessário configurar o nome e e-mail:
+  \vspace{-.8em}%
+  \inputminted{bash}{02_config.sh}
+\end{frame}
+
+\begin{frame}{Modelo do git para commits e respectivos comandos}
+  \begin{tikzpicture}[
+    node distance=4ex, >=stealth', thick,
+    LocalNode/.style={draw, rounded corners=.5ex, color=blue!40!black},
+    RemoteNode/.style={LocalNode, color=red!40!black, xshift=-3ex},
+    VertBar/.style={node distance=7cm},
+    MidTxt/.style={above, scale=1, midway},
+    MidTxtBelow/.style={MidTxt, below},
+    DiffLine/.style={o-Parenthesis, color=green!40!black},
+  ]
+    \node[LocalNode] (w) {Workspace};
+    \node[LocalNode, right=of w] (s) {Staging};
+    \node[LocalNode, right=of s] (l) {Repositório local};
+    \node[RemoteNode, right=of l] (r) {Repositório remoto};
+    \node[below of=w, VertBar] (wg) {};
+    \node[below of=s, VertBar] (sg) {};
+    \node[below of=l, VertBar] (lg) {};
+    \node[below of=r, VertBar] (rg) {};
+    \draw[dashed, color=lightgray] (w) -- (wg);
+    \draw[dashed, color=lightgray] (s) -- (sg);
+    \draw[dashed, color=lightgray] (l) -- (lg);
+    \draw[dashed, color=lightgray] (r) -- (rg);
+    \draw[->] ($(w)!0.15!(wg)$) --
+      node[MidTxt]{add}
+      ($(s)!0.15!(sg)$);
+    \draw[->] ($(s)!0.18!(sg)$) --
+      node[MidTxt]{commit}
+      ($(l)!0.18!(lg)$);
+    \draw[->] ($(w)!0.21!(wg)$) --
+      node[MidTxtBelow]{commit -a}
+      ($(l)!0.21!(lg)$);
+    \draw[<-] ($(r)!0.33!(rg)$) --
+      node[MidTxt]{push}
+      ($(l)!0.33!(lg)$);
+    \draw[<-] ($(l)!0.36!(lg)$) --
+      node[MidTxtBelow]{fetch/pull}
+      ($(r)!0.36!(rg)$);
+    \draw[->] ($(l)!0.48!(lg)$) --
+      node[MidTxt]{reset \emph{ref}}
+      ($(s)!0.48!(sg)$);
+    \draw[->] ($(s)!0.51!(sg)$) --
+      node[MidTxt]{checkout \emph{path}}
+      ($(w)!0.51!(wg)$);
+    \draw[->] ($(l)!0.54!(lg)$) --
+      node[MidTxtBelow]{checkout \emph{ref} / reset -{}-hard}
+      ($(w)!0.54!(wg)$);
+    \draw[DiffLine] ($(w)!0.78!(wg)$) --
+      node[MidTxt]{diff}
+      ($(s)!0.78!(sg)$);
+    \draw[DiffLine] ($(s)!0.81!(sg)$) --
+      node[MidTxt]{diff -{}-staged}
+      ($(l)!0.81!(lg)$);
+    \draw[DiffLine] ($(w)!0.84!(wg)$) --
+      node[MidTxtBelow]{diff \emph{ref}}
+      ($(l)!0.84!(lg)$);
+  \end{tikzpicture}
+  \vfill\vspace{-1em}%
+  O \texttt{git diff} não realiza alterações;
+  ``\emph{staging}'' também é chamado de \emph{índice} ou \emph{cache};
+  \emph{ref} é uma referência a um \emph{commit} (versão).
+\end{frame}
+
+\begin{frame}{Referências a \emph{commits}, \emph{branches},
+              \emph{detached HEAD}}
+  Uma referência especial que merece destaque é a \texttt{HEAD},
+  um nome para o commit ``atual'' tomado como base de comparação
+  ao avaliar o que mudou no \emph{workspace},
+  e que sempre acompanha novos \emph{commits}.
+  A \texttt{HEAD} pode apontar para:
+  \begin{itemize}
+    \item
+      Uma \emph{branch} (ramificação) local,
+      através de seu \emph{nome}.
+      Nesse caso, novos \emph{commits} modificam a \emph{branch},
+      continuado-a sequencialmente,
+      e a \texttt{HEAD} naturalmente acompanha tais modificações,
+      mas continua a apontar para a \emph{branch}.
+    \item Um \emph{hash}, referenciando um único \emph{commit}.
+      Nesse caso, dizemos que a referência \texttt{HEAD}
+      está \texttt{detached} (desprendida).
+      Cada novo \emph{commit} altera a \texttt{HEAD},
+      mas isso não possui nenhum outro efeito.
+  \end{itemize}
+  Esse comportamento é característico das \emph{branches} locais;
+  todos os outros tipos de referências após um \emph{checkout}
+  resultarão em \emph{detached HEAD},
+  o que significa que apenas as \emph{branches}
+  acompanham naturalmente novos \emph{commits}.
+\end{frame}
+
+\begin{frame}[fragile]{Primeiros experimentos com \emph{branches},
+                       \emph{tags} e outras \emph{refs}}
+  \vspace{-.8em}%
+  \inputminted{bash}{03_refs.sh}
+\end{frame}
+
+\begin{frame}[fragile]{Exercício de visualização, clone/bisect/grep
+                       e Quatérnions!}
+  \textbf{Exercício}:
+  Quatérnions são números ``4D'' não comutativos
+  com propriedades particularmente relevantes
+  para modelar rotações em 3D de maneira eficiente e eficaz,
+  por exemplo em computação gráfica.
+  Encontrar o autor, a data do primeiro commit
+  a partir do qual o Sympy passou a ter a palavra \texttt{Quaternion}.
+  \inputminted{bash}{04_bisect_exercise.sh}
+
+  Clonando via SSH ou HTTPS faz diferença?
+  Qual o resultado de \texttt{git remote -v}?
+  As datas de autoria e commit batem?
+\end{frame}
+
+
+\begin{frame}
+  \begin{columns}[c]
+    \column{.5\textwidth}
+    \begin{center}
+      {\fontsize{5cm}{2.5cm}\selectfont FIM!}
+      \vfill
+      \vspace{1em}
+      \url{\repo}
+    \end{center}
+    \vspace{3em}
+    Referências:
+    \column{.5\textwidth}
+    \begin{center}
+      \qrcode[height=5cm]{\repo}
+    \end{center}
+  \end{columns}
+  \vfill
+  \fontsize{8pt}{7pt}\selectfont
+  \begin{itemize}[label=--, leftmargin=0mm]
+    \item \url{https://www.gnu.org/philosophy/mcvoy.en.html}
+      (Richard Stallman, ``Thank You, Larry McVoy'')
+    \item \url{https://www.linuxjournal.com/content/git-origin-story}
+      (Zack Brown)
+    \item \url{%
+        https://pt.slideshare.net/slideshow%
+               /20150314-grupysp-projetos-open-source-como-colaborar%
+               /45854503\#2}
+    \item \url{https://git-scm.com/book}
+    \item \url{https://github.com/git/git}
+    \item \url{https://github.com/danilobellini/git-tutorial-br/}
+  \end{itemize}
+\end{frame}
+
+
+\end{document}

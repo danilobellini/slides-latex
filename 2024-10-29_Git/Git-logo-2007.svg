@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg xmlns:svg="http://www.w3.org/2000/svg"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     version="1.0"
+     width="71"
+     height="26">
+  <g id="gitlogo">
+    <rect id="shadow"
+          width="70"
+          height="25"
+          ry="2.5"
+          x="1"
+          y="1"
+          fill="#60605d" />
+    <rect id="background"
+          width="70"
+          height="25"
+          ry="2.5"
+          x="0"
+          y="0"
+          fill="#fff" />
+    <rect id="minus" width="6" height="2" x="7" y="8" fill="#c00000" />
+    <use xlink:href="#minus" transform="translate(8,0)"/>
+    <use xlink:href="#minus" transform="translate(16,0)"/>
+    <path id="plus"
+          d="M 9,13 L 9,15 L 7,15 L 7,17 L 9,17 L 9,19 L 11,19 L 11,17 L 13,17 L 13,15 L 11,15 L 11,13 L 9,13 z"
+          fill="#008000" />
+    <use xlink:href="#plus" transform="translate(8,0)"/>
+    <use xlink:href="#plus" transform="translate(16,0)"/>
+
+    <g id="git"
+       fill="#008000">
+      <path id="g"
+            d="M 38,11 L 38,12 L 37,12 L 37,16 L 38,16 L 38,17 L 41,17 L 41,18 L 38,18 L 38,19 L 43,19 L 43,18 L 44,18 L 44,17 L 44,16 L 44,15 L 44,12 L 44,11 L 38,11 z M 40,12 L 41,12 L 41,16 L 40,16 L 40,12 z" />
+      <path id="i"
+            d="M 47,8 L 47,10 L 50,10 L 50,8 L 47,8 z M 45,11 L 45,12 L 47,12 L 47,16 L 45,16 L 45,17 L 52,17 L 52,16 L 50,16 L 50,12 L 50,11 L 45,11 z" />
+      <path id="t"
+            d="M 54,9 L 54,11 L 52,11 L 52,12 L 54,12 L 54,16 L 54,17 L 59,17 L 59,16 L 57,16 L 57,12 L 59,12 L 59,11 L 57,11 L 57,9 L 54,9 z" />
+    </g>
+  </g>
+</svg>
