@@ -86,6 +86,13 @@ ou no LibreOffice Impress (disponíveis no
         AST: O que é e como usar o módulo padrão?
       </a></td>
     </tr>
+    <tr>
+      <td>2024-10-29</td>
+      <td><a href="https://www.secompufscar.com.br/">SECOMP UFSCar</a></td>
+      <td><a href="2024-10-29_Git/slides.pdf">
+        Controle de versão com git
+      </a></td>
+    </tr>
   </tbody>
 </table>
 
